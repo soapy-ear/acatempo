@@ -1,0 +1,370 @@
+/* Reset & Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f4;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navbar */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #4b0082;  /* Deep purple */
+  color: #ffffff;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.navbar-brand {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #da70d6;  /* Orchid purple */
+  text-transform: uppercase;
+}
+
+.navbar-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+.navbar-links li a {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 1.1rem;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navbar-links li a:hover {
+  background-color: #da70d6;  /* Orchid hover */
+  color: #4b0082;
+}
+
+.navbar-user {
+  font-size: 1rem;
+  font-style: italic;
+  color: #dcdcdc;
+}
+
+/* General Container Styles */
+.container {
+  width: 95%;
+  max-width: 1400px;  /* Increased for wider layout */
+  margin: 80px auto 20px;  /* Account for fixed navbar */
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.full-width {
+  width: 100%;
+  padding: 20px;
+}
+
+/* Headings */
+h1, h2 {
+  color: #4b0082;
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-size: 1.8rem;
+}
+
+/* Button Styles */
+.button-group {
+  display: flex;
+  justify-content: center;  /* Center the buttons */
+  gap: 20px;                /* Space between buttons */
+  margin-top: 30px;
+}
+
+.btn {
+  padding: 15px 30px;
+  font-size: 18px;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-primary {
+  background-color: #6a0dad;  /* Amethyst */
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #4b0082;
+  transform: scale(1.05);
+}
+
+.btn-secondary {
+  background-color: #ba55d3;  /* Medium orchid */
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #9932cc;
+  transform: scale(1.05);
+}
+
+.btn-register,
+.btn-back {
+  padding: 10px 20px;       /* Smaller padding for shorter buttons */
+  font-size: 16px;          /* Slightly smaller text */
+  width: auto;              /* Prevent buttons from stretching */
+  min-width: 150px;         /* Consistent minimum width */
+  text-align: center;
+}
+
+.btn-register:hover,
+.btn-back:hover {
+  transform: scale(1.05);   /* Slight pop effect on hover */
+}
+.btn-register {
+  background-color: #28a745; /* Green */
+  color: white;
+  border: none;
+  border-radius: 8px;
+}
+/* Timetable Grid */
+.timetable-grid {
+  display: grid;
+  grid-template-columns: 100px repeat(5, 1fr);
+  grid-auto-rows: 60px;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.grid-header {
+  background-color: #4b0082; /* Purple for headers */
+  color: white;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+
+.grid-hour {
+  background-color: #f4f4f4;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+
+.grid-cell {
+  border: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.event {
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  text-align: center;
+  width: fit-content;
+}
+
+.math-lecture {
+  background-color: #ff6347; /* Tomato orange */
+  font-weight: bold;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 120px; /* Spanning 2 time slots */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+}
+.supervisor-meeting {
+  background-color: #28a745; /* Green */
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+}
+
+/* Dashboard */
+.dashboard-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
+}
+
+/* Button group aligned to the left */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1;
+}
+
+/* Schedule box aligned to the right */
+.schedule-box {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  padding: 20px;
+  width: 40%;  /* Takes up 40% of the page */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.schedule-box h2 {
+  margin-bottom: 15px;
+  font-size: 28px;
+  color: #4b0082;  /* Purple theme */
+}
+
+.schedule-box ul {
+  list-style: none;
+  padding: 0;
+}
+
+.schedule-box li {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 10px;
+  text-align: left;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.schedule-box li:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.schedule-box .current-date {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+
+.welcome-text {
+  font-size: 36px;
+  color: #4b0082;
+  margin-bottom: 30px;
+  font-weight: bold;
+}
+
+.module-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two equal columns */
+  gap: 40px; /* Space between the columns */
+  margin-top: 30px;
+}
+
+/* Styling for each semester box */
+.semester {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.semester h2 {
+  font-size: 24px;
+  color: #4b0082;  /* Purple header */
+  border-bottom: 2px solid #4b0082;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Module list styling */
+.module-list {
+  list-style: none;
+  padding: 0;
+}
+
+.module-list li {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+}
+
+.module-list li:last-child {
+  border-bottom: none;
+}
+
+input[type="radio"] {
+  margin-right: 10px;
+  transform: scale(1.2);
+}
+
+label {
+  font-size: 18px;
+  color: #333;
+}
+
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .module-grid {
+    grid-template-columns: 1fr; /* Stack columns on smaller screens */
+  }
+}
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .navbar-links {
+    flex-direction: column;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .container, .dashboard-container {
+    width: 95%;
+    padding: 20px;
+  }
+}
+
