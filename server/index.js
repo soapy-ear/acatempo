@@ -2,9 +2,11 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const pool = require("./db");
+const PORT = process.env.PORT || 5001;
 
 //middleware
-app.use(cors()); //so backend can interact with front end
+app.use(cors({ origin: "https://soapy-ear.github.io" }));
+
 app.use(express.json()); //allows access to req.body
 
 //ROUTES
@@ -96,6 +98,6 @@ app.delete("/modules/:id", async (req, res) => {
   }
 });
 
-app.listen(5001, () => {
+app.listen(PORT,  () => {
   console.log("Server has started on port 5001");
 });
