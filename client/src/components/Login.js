@@ -25,15 +25,28 @@ const Login = ({ setAuth }) => {
         }
       );
 
-      const parseRes = await response.json();
+      const contentType = response.headers.get("content-type");
 
-      if (parseRes.token) localStorage.setItem("token", parseRes.token);
-      setAuth(true);
-      //console.log(parseRes); for testing
+      if (contentType && contentType.includes("application/json")) {
+        const parseRes = await response.json();
+
+        if (parseRes.token) {
+          localStorage.setItem("token", parseRes.token);
+          setAuth(true);
+        } else {
+          setAuth(false);
+          console.error("Login failed:", parseRes.message || "Unknown error");
+        }
+      } else {
+        // This will catch cases where an HTML response is returned
+        const text = await response.text();
+        console.error("Unexpected response format:", text);
+      }
     } catch (err) {
-      console.error(err.message);
+      console.error("Error during login:", err.message);
     }
   };
+
   return (
     <Fragment>
       <h1 className="text-center">Welcome to AcaTempo</h1>
