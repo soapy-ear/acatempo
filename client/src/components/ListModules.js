@@ -11,13 +11,16 @@ const ListModules = () => {
   async function deleteModule(id) {
     try {
       const token = localStorage.getItem("token"); // Retrieve the token
-      const res = await fetch(`http://localhost:5001/modules/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          token: token, // Add the token in the header
-        },
-      });
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/modules/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            token: token, // Add the token in the header
+          },
+        }
+      );
 
       if (res.ok) {
         setModules(modules.filter((module) => module.mod_id !== id));
@@ -33,13 +36,16 @@ const ListModules = () => {
   async function getModules() {
     try {
       const token = localStorage.getItem("token"); // Retrieve the token
-      const res = await fetch("http://localhost:5001/modules", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          token: token, // Add the token in the header
-        },
-      });
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/modules/`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: token, // Add the token in the header
+          },
+        }
+      );
 
       if (res.ok) {
         const moduleArray = await res.json();

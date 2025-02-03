@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/acatempo/static/css/main.c3a325c9.css",
+    "main.js": "/acatempo/static/js/main.60d2bb3f.js",
+    "index.html": "/acatempo/index.html",
+    "main.c3a325c9.css.map": "/acatempo/static/css/main.c3a325c9.css.map",
+    "main.60d2bb3f.js.map": "/acatempo/static/js/main.60d2bb3f.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.c3a325c9.css",
+    "static/js/main.60d2bb3f.js"
+  ]
+}

@@ -36,10 +36,13 @@ function App() {
         return;
       }
 
-      const response = await fetch("http://localhost:5001/auth/is-verify", {
-        method: "GET",
-        headers: { token: token },
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/auth/is-verify`,
+        {
+          method: "GET",
+          headers: { token: token },
+        }
+      );
 
       const parseRes = await response.json();
       if (parseRes === true) {
@@ -56,10 +59,13 @@ function App() {
   async function fetchUserName() {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:5001/profile", {
-        method: "GET",
-        headers: { "Content-Type": "application/json", token: token },
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/auth/is-verify`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json", token: token },
+        }
+      );
 
       const data = await response.json();
       setUserName(data.user_name);

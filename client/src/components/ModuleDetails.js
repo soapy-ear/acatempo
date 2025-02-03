@@ -22,13 +22,16 @@ const ModuleDetails = () => {
         return;
       }
 
-      const response = await fetch(`http://localhost:5001/modules/${id}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          token: token,
-        },
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/modules/${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+          },
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();

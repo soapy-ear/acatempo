@@ -31,10 +31,13 @@ const Dashboard = ({ setAuth }) => {
         console.error("Token is missing from localStorage");
         return;
       }
-      const response = await fetch("http://localhost:5001/dashboard/", {
-        method: "GET",
-        headers: { token: localStorage.getItem("token") },
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/dashboard`,
+        {
+          method: "GET",
+          headers: { token: localStorage.getItem("token") },
+        }
+      );
 
       const parseRes = await response.json();
       setName(parseRes.user_name);
