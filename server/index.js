@@ -16,6 +16,7 @@ app.use("/auth", require("./routes/jwtAuth"));
 app.use("/dashboard", require("./routes/dashboard"));
 
 //THE FOLLOWING ROUTES NEED MOVING INTO NEW FILE crudModules.js
+
 //get all modules (mod info page? mod sem request page?)
 app.get("/modules", async (req, res) => {
   try {
@@ -25,6 +26,7 @@ app.get("/modules", async (req, res) => {
     console.error(err.message);
   }
 });
+
 //get a module
 app.get("/modules/:id", async (req, res) => {
   try {

@@ -18,6 +18,7 @@ import Timetable from "./components/Timetable";
 import ManageModules from "./components/ManageModules";
 import ListModules from "./components/ListModules";
 import MyProfile from "./components/MyProfile";
+import ModuleDetails from "./components/ModuleDetails";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -135,6 +136,13 @@ function App() {
               path="/listmodules"
               element={
                 isAuthenticated ? <ListModules /> : <Navigate to="/login" />
+              }
+            />
+            <Route
+              exact
+              path="/module/:id"
+              element={
+                isAuthenticated ? <ModuleDetails /> : <Navigate to="/login" />
               }
             />
             <Route

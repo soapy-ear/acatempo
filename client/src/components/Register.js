@@ -35,6 +35,7 @@ const Register = ({ setAuth }) => {
   };
   return (
     <Fragment>
+      <h1 className="text-center">Welcome to AcaTempo</h1>
       <h1 className="text-center my-5">Register</h1>
       <form onSubmit={onSubmitForm}>
         <input
