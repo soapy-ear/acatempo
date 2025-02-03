@@ -97,6 +97,14 @@ function App() {
           <Routes>
             <Route
               exact
+              path="/"
+              element={
+                <Navigate to={isAuthenticated ? "/dashboard" : "/login"} />
+              }
+            />
+
+            <Route
+              exact
               path="/login"
               element={
                 !isAuthenticated ? (
