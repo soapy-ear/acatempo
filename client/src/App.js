@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 
 // Components
-import Navbar from "./components/Navbar"; // Import Navbar
+import Navbar from "./components/Navbar";
 import Dashboard from "./components/Dashboard";
 import Login from "./components/Login";
 import Register from "./components/Register";
@@ -32,7 +32,8 @@ function App() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        console.error("No token found in localStorage.");
+        console.warn("No token found in localStorage."); // Changed from error to warning
+        setIsAuthenticated(false);
         return;
       }
 
@@ -59,13 +60,22 @@ function App() {
   async function fetchUserName() {
     try {
       const token = localStorage.getItem("token");
+      if (!token) {
+        console.warn("No token found in localStorage. Skipping user fetch.");
+        return;
+      }
+
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/auth/is-verify`,
+        `${process.env.REACT_APP_API_URL}/profile`, // Ensure correct profile endpoint
         {
           method: "GET",
           headers: { "Content-Type": "application/json", token: token },
         }
       );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch user data");
+      }
 
       const data = await response.json();
       setUserName(data.user_name);
