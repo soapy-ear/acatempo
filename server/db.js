@@ -1,12 +1,11 @@
-const Pool = require("pg").Pool;
+const { Pool } = require("pg");
 require("dotenv").config();
 
 const pool = new Pool({
-  user: "postgres",
-  password: "takethat",
-  host: "localhost",
-  port: 5432, //postgres automatically runs on port 5432
-  database: "acatempomain",
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false, // Required for connecting securely to Render's PostgreSQL
+  },
 });
 
 module.exports = pool;
