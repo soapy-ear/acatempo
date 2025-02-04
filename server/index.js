@@ -5,8 +5,20 @@ const pool = require("./db");
 const PORT = process.env.PORT || 5001;
 require("dotenv").config();
 
-//middleware
-app.use(cors({ origin: "https://soapy-ear.github.io" }));
+const cors = require("cors");
+
+const allowedOrigins = [
+  "http://localhost:3000", // For local React development
+  "http://localhost:3001", // If you're using port 3001
+  "https://soapy-ear.github.io", // For GitHub Pages deployment
+];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true, // If you're using cookies or auth tokens
+  })
+);
 
 app.use(express.json()); //allows access to req.body
 
@@ -99,6 +111,6 @@ app.delete("/modules/:id", async (req, res) => {
   }
 });
 
-app.listen(PORT,  () => {
+app.listen(PORT, () => {
   console.log("Server has started on port 5001");
 });
