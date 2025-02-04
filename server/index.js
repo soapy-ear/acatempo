@@ -5,8 +5,6 @@ const pool = require("./db");
 const PORT = process.env.PORT || 5001;
 require("dotenv").config();
 
-const cors = require("cors");
-
 const allowedOrigins = [
   "http://localhost:3000", // For local React development
   "http://localhost:3001", // If you're using port 3001
