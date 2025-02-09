@@ -6,10 +6,12 @@ const PORT = process.env.PORT || 5001;
 
 // CORS configuration
 const corsOptions = {
-  origin: "https://acatempo1.onrender.com", // Allow frontend requests
+  origin: ["http://localhost:3000", "https://acatempo1.onrender.com"], // ✅ Allow local & deployed frontend
   credentials: true,
 };
+
 app.use(cors(corsOptions));
+
 
 app.use(express.json()); // Allows access to req.body
 
