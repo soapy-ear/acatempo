@@ -3,12 +3,15 @@ const app = express();
 const cors = require("cors");
 const pool = require("./db");
 const PORT = process.env.PORT || 5001
-const corsOptions = {
-  origin: "https://acatempo1.onrender.com",
-};
+ //so backend can interact with front end
 
 //middleware
-app.use(cors(corsOptions)); //so backend can interact with front end
+const corsOptions = {
+  origin: "https://acatempo1.onrender.com",
+  credentials: true,
+};
+app.use(cors(corsOptions));
+ //so backend can interact with front end
 
 
 app.use(express.json()); //allows access to req.body

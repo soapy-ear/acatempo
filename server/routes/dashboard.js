@@ -8,10 +8,11 @@ router.get("/", authorisation, async (req, res) => {
     console.log("User ID from token:", req.user);
 
     // Query the database to get the user's name
-    const user = await pool.query(
-      "SELECT user_name FROM users WHERE user_id = $1",
-      [req.user]
-    );
+  const user = await pool.query(
+    "SELECT user_name FROM users WHERE user_id = $1",
+    [req.user.user_id]
+  );
+
 
     // Check if the user exists
     if (user.rows.length === 0) {

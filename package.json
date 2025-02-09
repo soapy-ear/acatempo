@@ -20,5 +20,8 @@
     "url": "https://github.com/soapy-ear/acatempo/issues"
   },
   "homepage": "https://github.com/soapy-ear/acatempo#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "cors": "^2.8.5"
+  }
 }
