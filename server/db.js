@@ -1,15 +1,12 @@
-const { Pool } = require("pg");
+const Pool = require("pg").Pool;
 require("dotenv").config();
 
-const isProduction = process.env.NODE_ENV === "production";
-
 const pool = new Pool({
-  connectionString: isProduction
-    ? process.env.DATABASE_URL // Render's PostgreSQL
-    : "postgres://postgres:takethat@localhost:5432/acatempomain", // Local PostgreSQL
-  ssl: isProduction
-    ? { rejectUnauthorized: false } // Required for Render
-    : false, // No SSL needed locally
+  user: "acatempo_user",
+  password: "rZAwdTEaDLorKnNBCljObsR88yzy4nTc",
+  host: "dpg-cugrq4rtq21c73f32uj0-a",
+  port: 5432, //postgres automatically runs on port 5432
+  database: "acatempo",
 });
 
 module.exports = pool;

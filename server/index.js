@@ -2,21 +2,14 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const pool = require("./db");
-const PORT = process.env.PORT || 5001;
-require("dotenv").config();
+const PORT = process.env.PORT || 5001
+const corsOptions = {
+  origin: "https://acatempo1.onrender.com",
+};
 
-const allowedOrigins = [
-  "http://localhost:3000", // For local React development
-  "http://localhost:3001", // If you're using port 3001
-  "https://soapy-ear.github.io", // For GitHub Pages deployment
-];
+//middleware
+app.use(cors(corsOptions)); //so backend can interact with front end
 
-app.use(
-  cors({
-    origin: allowedOrigins,
-    credentials: true, // If you're using cookies or auth tokens
-  })
-);
 
 app.use(express.json()); //allows access to req.body
 

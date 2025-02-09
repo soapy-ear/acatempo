@@ -20,16 +20,13 @@ const MyProfile = () => {
           return;
         }
 
-        const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/profile`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              token: token,
-            },
-          }
-        );
+        const response = await fetch("https://acatempo.onrender.com/profile", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+          },
+        });
 
         if (response.ok) {
           const data = await response.json();

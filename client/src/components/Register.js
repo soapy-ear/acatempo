@@ -20,7 +20,7 @@ const Register = ({ setAuth }) => {
     try {
       const body = { email, password, name };
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/auth/register`,
+        "https://acatempo.onrender.com/auth/register",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -38,7 +38,6 @@ const Register = ({ setAuth }) => {
   };
   return (
     <Fragment>
-      <h1 className="text-center">Welcome to AcaTempo</h1>
       <h1 className="text-center my-5">Register</h1>
       <form onSubmit={onSubmitForm}>
         <input

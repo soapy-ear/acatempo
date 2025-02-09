@@ -11,7 +11,7 @@ const EditModule = ({ module }) => {
       const token = localStorage.getItem("token"); // Retrieve token from localStorage
       const body = { mod_cod, mod_name };
 
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/modules/${id}`, {
+      const res = await fetch(`https://acatempo.onrender.com/modules/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json", // Fixed: Removed extra spaces
@@ -42,7 +42,7 @@ const EditModule = ({ module }) => {
         Edit
       </button>
 
-      {/* Modal for editing the module */}
+      {/* Modal for editing the module */} 
       <div className="modal" id={`id${module.mod_id}`}>
         <div className="modal-dialog">
           <div className="modal-content">

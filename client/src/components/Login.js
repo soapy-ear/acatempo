@@ -16,40 +16,23 @@ const Login = ({ setAuth }) => {
     e.preventDefault();
     try {
       const body = { email, password };
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/auth/login`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        }
-      );
+      const response = await fetch("https://acatempo.onrender.com/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
 
-      const contentType = response.headers.get("content-type");
+      const parseRes = await response.json();
 
-      if (contentType && contentType.includes("application/json")) {
-        const parseRes = await response.json();
-
-        if (parseRes.token) {
-          localStorage.setItem("token", parseRes.token);
-          setAuth(true);
-        } else {
-          setAuth(false);
-          console.error("Login failed:", parseRes.message || "Unknown error");
-        }
-      } else {
-        // This will catch cases where an HTML response is returned
-        const text = await response.text();
-        console.error("Unexpected response format:", text);
-      }
+      if (parseRes.token) localStorage.setItem("token", parseRes.token);
+      setAuth(true);
+      //console.log(parseRes); for testing
     } catch (err) {
-      console.error("Error during login:", err.message);
+      console.error(err.message);
     }
   };
-
   return (
     <Fragment>
-      <h1 className="text-center">Welcome to AcaTempo</h1>
       <h1 className="text-center my-5">Login</h1>
       <form onSubmit={onSubmitForm}>
         <input

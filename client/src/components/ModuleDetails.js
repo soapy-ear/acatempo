@@ -23,7 +23,7 @@ const ModuleDetails = () => {
       }
 
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/modules/${id}`,
+        `https://acatempo.onrender.com/modules/${id}`,
         {
           method: "GET",
           headers: {

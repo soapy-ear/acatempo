@@ -28,17 +28,14 @@ const ManageModules = () => {
       const body = { mod_name, mod_cod, semester, description };
       console.log("Submitting data:", body);
 
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/modules`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            token: token,
-          },
-          body: JSON.stringify(body),
-        }
-      );
+      const response = await fetch("https://acatempo.onrender.com/modules", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          token: token,
+        },
+        body: JSON.stringify(body),
+      });
 
       const result = await response.json();
       console.log("Response from backend:", result);

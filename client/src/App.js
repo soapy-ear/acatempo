@@ -1,14 +1,14 @@
 import React, { Fragment, useState, useEffect } from "react";
 import "./App.css";
 import {
-  HashRouter as Router,
+  BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
 } from "react-router-dom";
 
 // Components
-import Navbar from "./components/Navbar";
+import Navbar from "./components/Navbar"; // Import Navbar
 import Dashboard from "./components/Dashboard";
 import Login from "./components/Login";
 import Register from "./components/Register";
@@ -32,18 +32,14 @@ function App() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        console.warn("No token found in localStorage."); // Changed from error to warning
-        setIsAuthenticated(false);
+        console.error("No token found in localStorage.");
         return;
       }
 
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/auth/is-verify`,
-        {
-          method: "GET",
-          headers: { token: token },
-        }
-      );
+      const response = await fetch("https://acatempo.onrender.com/auth/is-verify", {
+        method: "GET",
+        headers: { token: token },
+      });
 
       const parseRes = await response.json();
       if (parseRes === true) {
@@ -60,22 +56,10 @@ function App() {
   async function fetchUserName() {
     try {
       const token = localStorage.getItem("token");
-      if (!token) {
-        console.warn("No token found in localStorage. Skipping user fetch.");
-        return;
-      }
-
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/profile`, // Ensure correct profile endpoint
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json", token: token },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch user data");
-      }
+      const response = await fetch("https://acatempo.onrender.com/profile", {
+        method: "GET",
+        headers: { "Content-Type": "application/json", token: token },
+      });
 
       const data = await response.json();
       setUserName(data.user_name);
@@ -95,14 +79,6 @@ function App() {
         {/* Show navbar when logged in */}
         <div className="container">
           <Routes>
-            <Route
-              exact
-              path="/"
-              element={
-                <Navigate to={isAuthenticated ? "/dashboard" : "/login"} />
-              }
-            />
-
             <Route
               exact
               path="/login"
