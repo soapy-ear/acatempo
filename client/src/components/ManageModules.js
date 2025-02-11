@@ -28,7 +28,7 @@ const ManageModules = () => {
       const body = { mod_name, mod_cod, semester, description };
       console.log("Submitting data:", body);
 
-      const response = await fetch("https://acatempo.onrender.com/modules", {
+      const response = await fetch("http://localhost:5001/modules", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

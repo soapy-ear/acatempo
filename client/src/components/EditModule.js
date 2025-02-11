@@ -11,7 +11,7 @@ const EditModule = ({ module }) => {
       const token = localStorage.getItem("token"); // Retrieve token from localStorage
       const body = { mod_cod, mod_name };
 
-      const res = await fetch(`https://acatempo.onrender.com/modules/${id}`, {
+      const res = await fetch(`http://localhost:5001/modules/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json", // Fixed: Removed extra spaces

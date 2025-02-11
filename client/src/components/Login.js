@@ -19,57 +19,42 @@ const Login = ({ setAuth }) => {
     e.preventDefault();
     try {
       const body = { email, password };
-      const response = await fetch("https://acatempo.onrender.com/auth/login", {
+      const response = await fetch("http://localhost:5001/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
-        credentials: "include", // ✅ Ensure proper handling of credentials
       });
 
       const parseRes = await response.json();
-      console.log("Login Response:", parseRes); // Debugging: Check what the API returns
 
-      if (parseRes.token) {
-        localStorage.setItem("token", parseRes.token); // ✅ Save token
-        setAuth(true);
-        setErrorMessage(""); // ✅ Clear errors on success
-      } else {
-        setAuth(false);
-        setErrorMessage(parseRes.error || "Login failed: Invalid credentials"); // ✅ Show error
-      }
+      if (parseRes.token) localStorage.setItem("token", parseRes.token);
+      setAuth(true);
+      //console.log(parseRes); for testing
     } catch (err) {
-      console.error("Login Error:", err.message);
-      setAuth(false);
-      setErrorMessage("Server error: Unable to log in"); // ✅ Handle server errors
+      console.error(err.message);
     }
   };
 
   return (
     <Fragment>
       <h1 className="text-center my-5">Login</h1>
-      {errorMessage && (
-        <p className="alert alert-danger">{errorMessage}</p>
-      )}{" "}
-      {/* ✅ Show errors */}
       <form onSubmit={onSubmitForm}>
         <input
           type="email"
           name="email"
-          placeholder="Email"
+          placeholder="email"
           className="form-control my-3"
           value={email}
-          onChange={onChange}
-          required
-        />
+          onChange={(e) => onChange(e)}
+        ></input>
         <input
           type="password"
           name="password"
-          placeholder="Password"
+          placeholder="password"
           className="form-control my-3"
           value={password}
-          onChange={onChange}
-          required
-        />
+          onChange={(e) => onChange(e)}
+        ></input>
         <button className="btn btn-success w-100">Submit</button>
       </form>
       <Link to="/register">No account? Register here</Link>

@@ -20,7 +20,7 @@ const MyProfile = () => {
           return;
         }
 
-        const response = await fetch("https://acatempo.onrender.com/profile", {
+        const response = await fetch("http://localhost:5001/profile", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

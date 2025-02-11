@@ -31,7 +31,7 @@ const Dashboard = ({ setAuth }) => {
         console.error("Token is missing from localStorage");
         return;
       }
-      const response = await fetch("https://acatempo.onrender.com/dashboard/", {
+      const response = await fetch("http://localhost:5001/dashboard/", {
         method: "GET",
         headers: { token: localStorage.getItem("token") },
       });
@@ -50,9 +50,9 @@ const Dashboard = ({ setAuth }) => {
     setAuth(false);
   };
 
-  // useEffect(() => {
-  //getName();
-  // }, []);
+   useEffect(() => {
+    getName();
+    }, []);
 
   useEffect(() => {
     getName();

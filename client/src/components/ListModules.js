@@ -11,7 +11,7 @@ const ListModules = () => {
   async function deleteModule(id) {
     try {
       const token = localStorage.getItem("token"); // Retrieve the token
-      const res = await fetch(`https://acatempo.onrender.com/modules/${id}`, {
+      const res = await fetch(`http://localhost:5001/modules/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -33,7 +33,7 @@ const ListModules = () => {
   async function getModules() {
     try {
       const token = localStorage.getItem("token"); // Retrieve the token
-      const res = await fetch("https://acatempo.onrender.com/modules", {
+      const res = await fetch("http://localhost:5001/modules", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

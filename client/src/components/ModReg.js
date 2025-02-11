@@ -19,7 +19,7 @@ const ModReg = () => {
     const fetchModules = async () => {
       try {
         const token = localStorage.getItem("token"); // Get the JWT token
-        const response = await fetch("https://acatempo.onrender.com/modules", {
+        const response = await fetch("http://localhost:5001/modules", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
