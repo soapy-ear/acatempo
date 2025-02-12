@@ -7,8 +7,10 @@ import {
   Navigate,
 } from "react-router-dom";
 
-// Components
-import Navbar from "./components/Navbar"; // Import Navbar
+//Created with the help of https://www.youtube.com/watch?v=cjqfF5hyZFg 
+
+// Import all Components
+import Navbar from "./components/Navbar"; 
 import Dashboard from "./components/Dashboard";
 import Login from "./components/Login";
 import Register from "./components/Register";
@@ -21,30 +23,45 @@ import MyProfile from "./components/MyProfile";
 import ModuleDetails from "./components/ModuleDetails";
 
 function App() {
+  // State to track user authentication status
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // State to store the authenticated user's name
   const [userName, setUserName] = useState("");
 
+  //Updates authentication state (true or false)
   const setAuth = (boolean) => {
     setIsAuthenticated(boolean);
   };
 
+  /**
+   * Checks if the user is authenticated by verifying their token.
+   * If authenticated, fetches the user's name.
+   */
   async function isAuth() {
     try {
+      // Retrieve JWT token
       const token = localStorage.getItem("token");
+
       if (!token) {
         console.error("No token found in localStorage.");
         return;
       }
 
+      // Send request to verify authentication
       const response = await fetch("http://localhost:5001/auth/is-verify", {
         method: "GET",
-        headers: { token: token },
+        headers: { token: token }, // Include authentication token
       });
 
       const parseRes = await response.json();
+
+      // If token is valid, update authentication status and fetch user name
       if (parseRes === true) {
         setIsAuthenticated(true);
-        fetchUserName(); // Fetch user name once authenticated
+
+        // Fetch user name once authenticated
+        fetchUserName();
       } else {
         setIsAuthenticated(false);
       }
@@ -53,21 +70,29 @@ function App() {
     }
   }
 
+  /**
+   * Fetches the authenticated user's name from the backend.
+   */
   async function fetchUserName() {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token"); // Retrieve JWT token
       const response = await fetch("http://localhost:5001/profile", {
         method: "GET",
         headers: { "Content-Type": "application/json", token: token },
       });
 
       const data = await response.json();
+
+      // Set the user's name
       setUserName(data.user_name);
     } catch (err) {
       console.error("Error fetching user name:", err.message);
     }
   }
 
+  /**
+   * Runs authentication check when the component mounts.
+   */
   useEffect(() => {
     isAuth();
   }, []);
@@ -152,6 +177,8 @@ function App() {
                 isAuthenticated ? <MyProfile /> : <Navigate to="/login" />
               }
             />
+            
+            {/* Default Route: Redirect to Login if not authenticated, else Dashboard */}
             <Route
               path="/"
               element={
@@ -162,6 +189,7 @@ function App() {
                 )
               }
             />
+            {/* Error Route (404 Page Not Found) */}
             <Route
               path="*"
               element={<Error code={404} message={"Page Not Found"} />}

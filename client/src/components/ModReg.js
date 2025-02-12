@@ -2,7 +2,11 @@ import React, { Fragment, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 
+//Had the help of https://www.youtube.com/watch?v=5vF0FGfa0RQ throughout
+//AI also helped to split the semesters into columns
+
 const ModReg = () => {
+  // Hook for navigation
   const navigate = useNavigate();
 
   // State to track selected modules for each semester
@@ -15,22 +19,28 @@ const ModReg = () => {
   const [modules, setModules] = useState([]);
 
   // Fetch modules from the backend on component mount
+  //The function retrieves the user's authentication token and sends a GET request.
   useEffect(() => {
     const fetchModules = async () => {
       try {
         const token = localStorage.getItem("token"); // Get the JWT token
+
+        // Fetch modules from the backend API
         const response = await fetch("http://localhost:5001/modules", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            token: token, // Include the token in the request
+            token: token, // Include the token in the request for authentication
           },
         });
 
         if (response.ok) {
           const data = await response.json();
+
+          // Update state with fetched modules
           setModules(data);
-          console.log("Fetched modules:", data);
+
+          console.log("Fetched modules:", data); //For testing, may comment or delete later
         } else {
           console.error("Failed to fetch modules");
         }
@@ -51,12 +61,15 @@ const ModReg = () => {
   };
 
   // Function to handle form submission
+  //Ensures that one module is selected for each semester before proceeding.
+  //Navigates to the profile page with selected modules.
   const handleSubmit = () => {
     if (!selectedModules.semester1 || !selectedModules.semester2) {
       alert("Please select one module for each semester.");
       return;
     }
 
+    // Find selected modules in the full module list
     const selectedModuleDetails = {
       semester1: modules.find(
         (module) => module.mod_id === selectedModules.semester1
@@ -66,12 +79,17 @@ const ModReg = () => {
       ),
     };
 
+    // Navigate to the profile page with selected module details
     navigate("/myprofile", {
       state: { selectedModules: selectedModuleDetails },
     });
   };
 
-  // Filter modules based on semester
+  /**
+   * Filters modules based on semester.
+   * Assumes semester values are stored as integers (1 = Semester 1, 2 = Semester 2).
+   * This may need updating if we keep "year"
+   */
   const semester1Modules = modules.filter((module) => module.semester === 1);
   const semester2Modules = modules.filter((module) => module.semester === 2);
 
@@ -132,7 +150,7 @@ const ModReg = () => {
             </ul>
           </div>
         </div>
-
+        {/* Buttons for submission and navigation */}
         <div className="button-group">
           <button onClick={handleSubmit} className="btn-register">
             Register Modules

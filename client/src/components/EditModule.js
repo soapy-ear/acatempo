@@ -2,22 +2,28 @@ import React, { Fragment, useState } from "react";
 import "../App.css";
 
 const EditModule = ({ module }) => {
+  // State for module name and code, initialised with existing module values
   const [mod_name, setModName] = useState(module.mod_name);
-  const [mod_cod, setModCode] = useState(module.mod_cod); // Fixed: Correct initialization
+  const [mod_cod, setModCode] = useState(module.mod_cod);
+
+  /**
+   * Function to edit the module by sending a PUT request to the backend.
+   * It includes a JWT token for authentication.
+   */
 
   // Edit module function with JWT token
   const editModule = async (id) => {
     try {
       const token = localStorage.getItem("token"); // Retrieve token from localStorage
-      const body = { mod_cod, mod_name };
+      const body = { mod_cod, mod_name }; // Create request body
 
       const res = await fetch(`http://localhost:5001/modules/${id}`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json", // Fixed: Removed extra spaces
-          token: token, // Added JWT token in headers
+          "Content-Type": "application/json", // Ensure JSON format
+          token: token, // Attach authentication token
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify(body), // Convert object to JSON format
       });
 
       if (res.ok) {
@@ -42,7 +48,7 @@ const EditModule = ({ module }) => {
         Edit
       </button>
 
-      {/* Modal for editing the module */} 
+      {/* Modal for editing the module, helped with https://www.w3schools.com/howto/howto_css_modals.asp */}
       <div className="modal" id={`id${module.mod_id}`}>
         <div className="modal-dialog">
           <div className="modal-content">
@@ -86,6 +92,7 @@ const EditModule = ({ module }) => {
 
             {/* Modal Footer */}
             <div className="modal-footer">
+              {/* Save Changes Button */}
               <button
                 type="button"
                 className="btn btn-warning"
@@ -94,7 +101,7 @@ const EditModule = ({ module }) => {
               >
                 Save Changes
               </button>
-
+              {/* Close Button - Resets fields to original values */}
               <button
                 type="button"
                 className="btn btn-danger"

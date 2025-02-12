@@ -1,6 +1,7 @@
 import React from "react";
 import "../App.css";
 
+//Need to add proper navigation for "go back home" button
 const Error = ({ code, message }) => {
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>

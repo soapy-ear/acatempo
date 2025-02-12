@@ -2,6 +2,8 @@ import React, { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 
+//Currently all hard code, need to research best way to do this
+
 const Timetable = () => {
   const navigate = useNavigate();
 

@@ -2,22 +2,32 @@ import React, { Fragment, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 
+//Had the help of https://www.youtube.com/watch?v=5vF0FGfa0RQ throughout
+
 const ManageModules = () => {
-  const navigate = useNavigate();
-  const [mod_name, setModName] = useState("");
-  const [mod_cod, setModCode] = useState("");
-  const [semester, setSemester] = useState("");
-  const [description, setDescription] = useState("");
+  const navigate = useNavigate(); //Hook for programmatic navigation
+
+  //State variables to store module details
+  const [mod_name, setModName] = useState(""); //Module name
+  const [mod_cod, setModCode] = useState(""); //Module code
+  const [semester, setSemester] = useState(""); //Semester
+  const [description, setDescription] = useState(""); //Module description
+
+  /**
+   * Handles form submission for creating a new module
+   * Sends a POST request to the backend with module details
+   */
 
   const onSubmitForm = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submission behaviour
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token"); // Retrieve authentication token
       if (!token) {
         console.error("Token is missing from localStorage");
         return;
       }
 
+      // Ensure all fields are filled before submitting
       if (!mod_name || !mod_cod || !semester || !description) {
         alert(
           "Please fill in all fields, including the semester and description."
@@ -25,20 +35,22 @@ const ManageModules = () => {
         return;
       }
 
+      // Create request body with module data
       const body = { mod_name, mod_cod, semester, description };
-      console.log("Submitting data:", body);
+      console.log("Submitting data:", body); //Testing, may need deleting or commenting out later
 
+      // Send a POST request to the backend to create a module
       const response = await fetch("http://localhost:5001/modules", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          token: token,
+          token: token, // Include authentication token
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify(body), // Convert data to JSON format
       });
 
-      const result = await response.json();
-      console.log("Response from backend:", result);
+      const result = await response.json(); // Parse server response
+      console.log("Response from backend:", result); // Debugging log, may comment or delete later
     } catch (err) {
       console.error("Error submitting form:", err.message);
     }
@@ -75,7 +87,8 @@ const ManageModules = () => {
           <option value="1">Semester 1</option>
           <option value="2">Semester 2</option>
           <option value="3">Semester 3</option>
-          <option value="4">Year</option>
+          <option value="4">Year</option>{" "}
+          {/* This option may need changing as database is set a INT for module not VARCHAR */}
         </select>
 
         {/* Description Input */}
