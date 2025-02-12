@@ -28,13 +28,14 @@ CREATE TABLE student(
 --ON DELETE SET NULL;
 
 --set extension
-CREATE TABLE users(
-    user_id uuid PRIMARY KEY DEFAULT 
-    uuid_generate_v4(),
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
     user_name VARCHAR(255) NOT NULL,
     user_email VARCHAR(255) NOT NULL,
     user_password VARCHAR(255) NOT NULL
 );
+
+
 
 --test users
 INSERT INTO users(user_name, user_email, user_password) VALUES ('sophie', 'sophieearish@gmail.com', '12345');
@@ -80,3 +81,36 @@ WHERE mod_cod = '4COSC005W';
 UPDATE module
 SET description = 'This module introduces web technologies and covers theoretical and practical concepts of web development. It covers a variety of commonly used Internet programming languages. Students will gain practical experience of Web page development, and they will be expected to write programs and Web pages conforming to given guidelines.'
 WHERE mod_cod = '4COSC011W';
+
+ALTER TABLE module
+ADD COLUMN semester VARCHAR(20);
+
+UPDATE module
+SET semester = "1"
+WHERE mod_cod = '4COSC001W';
+
+UPDATE module
+SET semester = 1
+WHERE mod_cod = '4COSC002W';
+
+UPDATE module
+SET semester = 2
+WHERE mod_cod = '4COSC003W';
+
+UPDATE module
+SET semester = 1
+WHERE mod_cod = '4COSC004W';
+
+UPDATE module
+SET semester = 2
+WHERE mod_cod = '4COSC005W';
+
+UPDATE module
+SET semester = 2
+WHERE mod_cod = '4COSC011W';
+
+UPDATE module SET semester = '1' WHERE semester = 1;
+
+UPDATE module SET semester = '2' WHERE semester = 2;
+
+
