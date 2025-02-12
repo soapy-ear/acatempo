@@ -153,6 +153,16 @@ function App() {
               }
             />
             <Route
+              path="/"
+              element={
+                !isAuthenticated ? (
+                  <Navigate to="/login" />
+                ) : (
+                  <Navigate to="/dashboard" />
+                )
+              }
+            />
+            <Route
               path="*"
               element={<Error code={404} message={"Page Not Found"} />}
             />
