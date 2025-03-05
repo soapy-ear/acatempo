@@ -114,3 +114,41 @@ UPDATE module SET semester = '1' WHERE semester = 1;
 UPDATE module SET semester = '2' WHERE semester = 2;
 
 
+ALTER TABLE users ADD COLUMN role VARCHAR(20) CHECK (role IN ('student', 'staff', 'admin')) NOT NULL DEFAULT 'student';
+
+INSERT INTO users (user_name, user_email, user_password, role) 
+VALUES ($1, $2, $3, $4) RETURNING *;
+
+CREATE TABLE students (
+    user_id INT PRIMARY KEY REFERENCES users(user_id) ON DELETE CASCADE,
+    student_number VARCHAR(50) UNIQUE NOT NULL
+);
+
+
+
+CREATE TABLE staff (
+    user_id INT PRIMARY KEY REFERENCES users(user_id) ON DELETE CASCADE,
+    department VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE user_modules (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    mod_id INT NOT NULL REFERENCES module(mod_id) ON DELETE CASCADE,
+    registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, mod_id)
+);
+
+
+INSERT INTO user_modules (user_id, mod_id) VALUES (1, 5);
+
+SELECT * FROM user_modules;
+
+SELECT u.user_name, m.mod_name, m.mod_cod
+FROM users u
+JOIN user_modules um ON u.user_id = um.user_id
+JOIN module m ON um.mod_id = m.mod_id
+WHERE u.user_id = 1;
+
+
+INSERT INTO user_modules (user_id, mod_id) VALUES (1, 6);

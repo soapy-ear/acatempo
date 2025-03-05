@@ -5,7 +5,7 @@ const router = require("express").Router(); //Import Express router
 const bcrypt = require("bcrypt"); //Import bcrypt for password hashing
 const jwtGenerator = require("../utils/jwtGenerator"); //Utility for generating JWT tokens
 const validInfo = require("../middleware/validInfo"); //Middleware for input validation
-const authorisation = require("../middleware/authorisation"); //Middleware for JWT verification
+
 
 /**
  * route   POST /auth/register
@@ -16,7 +16,7 @@ const authorisation = require("../middleware/authorisation"); //Middleware for J
 router.post("/register", validInfo, async (req, res) => {
   try {
     // 1. Extract name, email, and password from request body
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     // 2. Check if the user already exists in the database
     const user = await pool.query("SELECT * FROM users WHERE user_email = $1", [
@@ -34,14 +34,31 @@ router.post("/register", validInfo, async (req, res) => {
 
     // 4. Insert the new user into the database
     const newUser = await pool.query(
-      "INSERT INTO users (user_name, user_email, user_password) VALUES ($1, $2, $3) RETURNING *",
-      [name, email, bcryptPassword]
+      "INSERT INTO users (user_name, user_email, user_password, role) VALUES ($1, $2, $3, $4) RETURNING *",
+      [name, email, bcryptPassword, role]
     );
 
     //res.json(newUser.rows[0]); for testing
 
+    const userId = newUser.rows[0].user_id;
+      // insert into student or staff table based on role
+    if (role === "student") {
+      await pool.query(
+      "INSERT INTO students (user_id, student_number) VALUES ($1, $2)",
+      [userId, `S${userId}`]
+    );
+  } else if (role === "staff"){
+    await pool.query(
+      "INSERT INTO staff (user_id, department) VALUES ($1, $2)",
+      [userId, "Computing"]
+    );
+  }
+
+
+
+
     // 5. Generate JWT token for the newly registered user
-    const token = jwtGenerator(newUser.rows[0].user_id);
+    const token = jwtGenerator(userId);
 
     // 6. Send the JWT token in the response
     return res.json({ token });
@@ -96,7 +113,7 @@ router.post("/login", validInfo, async (req, res) => {
  * desc    Verify if the user's token is valid
  * access  Private (requires JWT)
  */
-router.get("/is-verify", authorisation, async (req, res) => {
+router.get("/is-verify", async (req, res) => {
   try {
     // If the user has a valid token, return true
     res.json(true);

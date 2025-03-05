@@ -63,27 +63,47 @@ const ModReg = () => {
   // Function to handle form submission
   //Ensures that one module is selected for each semester before proceeding.
   //Navigates to the profile page with selected modules.
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedModules.semester1 || !selectedModules.semester2) {
       alert("Please select one module for each semester.");
       return;
     }
 
-    // Find selected modules in the full module list
-    const selectedModuleDetails = {
-      semester1: modules.find(
-        (module) => module.mod_id === selectedModules.semester1
-      ),
-      semester2: modules.find(
-        (module) => module.mod_id === selectedModules.semester2
-      ),
-    };
+    const token = localStorage.getItem("token");
 
-    // Navigate to the profile page with selected module details
-    navigate("/myprofile", {
-      state: { selectedModules: selectedModuleDetails },
-    });
+    try {
+      // Register Semester 1 module
+      const response1 = await fetch("http://localhost:5001/register-module", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          token: token, // Send JWT token for authentication
+        },
+        body: JSON.stringify({ mod_id: selectedModules.semester1 }), // Fix field name
+      });
+
+      // Register Semester 2 module
+      const response2 = await fetch("http://localhost:5001/register-module", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          token: token,
+        },
+        body: JSON.stringify({ mod_id: selectedModules.semester2 }),
+      });
+
+      if (response1.ok && response2.ok) {
+        alert("Modules registered successfully!");
+        navigate("/myprofile"); // Redirect to profile after successful registration
+      } else {
+        alert("Module registration failed. Please try again.");
+      }
+    } catch (err) {
+      console.error("Error registering modules:", err);
+      alert("An error occurred while registering modules.");
+    }
   };
+
 
   /**
    * Filters modules based on semester.
