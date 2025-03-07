@@ -131,21 +131,7 @@ app.post("/register-module", authorisation, async (req, res) => {
     const user_id = req.user; // Extracted from JWT
     console.log("Registering module:", { user_id, mod_id }); //for testing
 
-    // Check if the user is a student
-    const roleCheck = await pool.query(
-      "SELECT role FROM users WHERE user_id = $1",
-      [user_id]
-    );
-
-    if (roleCheck.rows.length === 0) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    if (roleCheck.rows[0].role !== "student") {
-      return res
-        .status(403)
-        .json({ error: "Only students can register for modules" });
-    }
+  
 
     // Register the student for the module
     await pool.query(
@@ -233,6 +219,30 @@ app.delete("/deregister-module/:mod_id", authorisation, async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
+
+// Route to create module timetable
+app.get("/events/:mod_id", async (req, res) => {
+  try {
+    const { mod_id } = req.params;
+
+    const events = await pool.query(
+      `SELECT eventID, name, type, day, start_time, end_time, roomID, mod_id 
+       FROM event 
+       WHERE mod_id = $1
+       ORDER BY 
+          ARRAY_POSITION(ARRAY['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], day), 
+          start_time`,
+      [mod_id]
+    );
+
+    res.json(events.rows);
+  } catch (err) {
+    console.error("Error fetching events:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 
 
 

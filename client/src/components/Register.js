@@ -10,11 +10,11 @@ const Register = ({ setAuth }) => {
     email: "",
     password: "",
     name: "",
-    role: "student",
+    user_specialisation: "student",
   });
 
   //Destructure values from inputs state
-  const { email, password, name, role } = inputs;
+  const { email, password, name, user_specialisation } = inputs;
 
   //Handles changes in input fields, updates state dynamically based on input name attribute.
   const onChange = (e) => {
@@ -29,7 +29,7 @@ const Register = ({ setAuth }) => {
 
     try {
       // Create request body with input values
-      const body = { email, password, name, role };
+      const body = { email, password, name, user_specialisation };
 
       const response = await fetch("http://localhost:5001/auth/register", {
         method: "POST",
@@ -84,9 +84,9 @@ const Register = ({ setAuth }) => {
         />
         {/* Role Selection (Dropdown) */}
         <select
-          name="role"
+          name="user_specialisation"
           className="form-control my-3"
-          value={role}
+          value={user_specialisation}
           onChange={onChange}
           required
         >

@@ -104,7 +104,6 @@ const ModReg = () => {
     }
   };
 
-
   /**
    * Filters modules based on semester.
    * Assumes semester values are stored as integers (1 = Semester 1, 2 = Semester 2).

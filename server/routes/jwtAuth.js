@@ -13,10 +13,12 @@ const validInfo = require("../middleware/validInfo"); //Middleware for input val
  * access  Public
  */
 
+
+
 router.post("/register", validInfo, async (req, res) => {
   try {
     // 1. Extract name, email, and password from request body
-    const { name, email, password, role } = req.body;
+    const { name, email, password, user_specialisation } = req.body;
 
     // 2. Check if the user already exists in the database
     const user = await pool.query("SELECT * FROM users WHERE user_email = $1", [
@@ -34,20 +36,20 @@ router.post("/register", validInfo, async (req, res) => {
 
     // 4. Insert the new user into the database
     const newUser = await pool.query(
-      "INSERT INTO users (user_name, user_email, user_password, role) VALUES ($1, $2, $3, $4) RETURNING *",
-      [name, email, bcryptPassword, role]
+      "INSERT INTO users (user_name, user_email, user_password) VALUES ($1, $2, $3) RETURNING *",
+      [name, email, bcryptPassword]
     );
 
     //res.json(newUser.rows[0]); for testing
 
     const userId = newUser.rows[0].user_id;
       // insert into student or staff table based on role
-    if (role === "student") {
+    if (user_specialisation === "student") {
       await pool.query(
       "INSERT INTO students (user_id, student_number) VALUES ($1, $2)",
       [userId, `S${userId}`]
     );
-  } else if (role === "staff"){
+  } else if (user_specialisation === "staff"){
     await pool.query(
       "INSERT INTO staff (user_id, department) VALUES ($1, $2)",
       [userId, "Computing"]
@@ -55,13 +57,11 @@ router.post("/register", validInfo, async (req, res) => {
   }
 
 
-
-
     // 5. Generate JWT token for the newly registered user
     const token = jwtGenerator(userId);
 
     // 6. Send the JWT token in the response
-    return res.json({ token });
+    return res.json({ token, user_specialisation });
   } catch (err) {
     console.error(err.message);
     return res.status(500).send("Server error");
@@ -87,6 +87,8 @@ router.post("/login", validInfo, async (req, res) => {
       return res.status(401).json("Password or email is incorrect");
     }
 
+    const user_id = user.rows[0].user_id;
+
     // 3. Compare the provided password with the hashed password in the database
     const validPassword = await bcrypt.compare(
       password,
@@ -96,17 +98,34 @@ router.post("/login", validInfo, async (req, res) => {
       return res.status(401).json("Password or email is incorrect");
     }
 
+    // Determine if the user is a student or staff
+    const studentCheck = await pool.query(
+      "SELECT * FROM students WHERE user_id = $1",
+      [user_id]
+    );
+    const staffCheck = await pool.query(
+      "SELECT * FROM staff WHERE user_id = $1",
+      [user_id]
+    );
+    let user_specialisation = "";
+    if (studentCheck.rows.length > 0) {
+      user_specialisation = "student";
+    } else if (staffCheck.rows.length > 0) {
+      user_specialisation= "staff";
+    }
+
     // 4. Generate JWT token for the authenticated user
-    const token = jwtGenerator(user.rows[0].user_id);
+    const token = jwtGenerator(user_id);
     console.log("Generated Token:", token);
 
     // 5. Send the JWT token in the response
-    return res.json({ token });
+    return res.json({ token, user_specialisation });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
   }
 });
+
 
 /**
  * route   GET /auth/is-verify

@@ -46,18 +46,31 @@ const Login = ({ setAuth }) => {
       // Parse the JSON response
       const parseRes = await response.json();
 
-      // If the server responds with a valid JWT token, store it in localStorage
-      if (parseRes.token) localStorage.setItem("token", parseRes.token);
-      setAuth(true); // Update authentication state
-      //console.log(parseRes); for testing, uncomment for testing 
+      if (response.ok && parseRes.token) {
+        // Store token & user specialisation in localStorage
+        localStorage.setItem("token", parseRes.token);
+        localStorage.setItem(
+          "user_specialisation",
+          parseRes.user_specialisation
+        );
+
+        //Set authentication to true
+        setAuth(true);
+      } else {
+        //Handle login failure
+        setErrorMessage(parseRes.error || "Invalid email or password.");
+      }
     } catch (err) {
       console.error(err.message); // Log any errors to the console
+      setErrorMessage("Server error. Please try again.");
     }
   };
 
   return (
     <Fragment>
       <h1 className="text-center my-5">Login</h1>
+      {/* Display error message if login fails */}
+      {errorMessage && <p className="alert alert-danger">{errorMessage}</p>}
       {/* Login Form */}
       <form onSubmit={onSubmitForm}>
         {/* Email Input */}

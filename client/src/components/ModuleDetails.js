@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import ModuleTimetable from "./ModuleTimetable";
 import "../App.css";
 
 
@@ -91,6 +92,8 @@ const ModuleDetails = () => {
           <strong>Description:</strong> {module.description}
         </p>
       </div>
+      {/* Module Timetable */}
+      <ModuleTimetable mod_id={id} />
       {/* Back Button */}
       <button onClick={() => navigate(-1)} className="btn-back">
         Back to List
