@@ -70,19 +70,17 @@ const ModReg = () => {
     }
 
     const token = localStorage.getItem("token");
-
+//register sem1 module
     try {
-      // Register Semester 1 module
       const response1 = await fetch("http://localhost:5001/register-module", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          token: token, // Send JWT token for authentication
+          token: token,
         },
-        body: JSON.stringify({ mod_id: selectedModules.semester1 }), // Fix field name
+        body: JSON.stringify({ mod_id: selectedModules.semester1 }),
       });
-
-      // Register Semester 2 module
+// register sem2 module
       const response2 = await fetch("http://localhost:5001/register-module", {
         method: "POST",
         headers: {
@@ -92,9 +90,15 @@ const ModReg = () => {
         body: JSON.stringify({ mod_id: selectedModules.semester2 }),
       });
 
+      const result1 = await response1.json();
+      const result2 = await response2.json();
+
       if (response1.ok && response2.ok) {
-        alert("Modules registered successfully!");
-        navigate("/myprofile"); // Redirect to profile after successful registration
+        alert(`Modules registered successfully! \n
+      Semester 1 Group: ${result1.assignedGroup} \n
+      Semester 2 Group: ${result2.assignedGroup}`);
+
+        navigate("/myprofile");
       } else {
         alert("Module registration failed. Please try again.");
       }
@@ -103,6 +107,7 @@ const ModReg = () => {
       alert("An error occurred while registering modules.");
     }
   };
+
 
   /**
    * Filters modules based on semester.

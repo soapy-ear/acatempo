@@ -123,29 +123,57 @@ app.delete("/modules/:id", async (req, res) => {
   }
 });
 
-//Registering for modules route
-
 app.post("/register-module", authorisation, async (req, res) => {
   try {
     const { mod_id } = req.body;
-    const user_id = req.user; // Extracted from JWT
-    console.log("Registering module:", { user_id, mod_id }); //for testing
+    const user_id = req.user; // Extract user ID from JWT
+    console.log("🔹 Registering module:", { user_id, mod_id });
 
-  
-
-    // Register the student for the module
-    await pool.query(
-      "INSERT INTO user_modules (user_id, mod_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
-      [user_id, mod_id]
+    // ✅ Step 1: Get all groups for this module, ordered by name
+    const groupQuery = await pool.query(
+      `SELECT g.group_id, g.group_name, 
+              COUNT(um.user_id) AS student_count
+       FROM group_table g
+       LEFT JOIN user_modules um ON g.group_id = um.group_id
+       WHERE g.mod_id = $1
+       GROUP BY g.group_id, g.group_name
+       HAVING COUNT(um.user_id) < g.capacity
+       ORDER BY g.group_name
+       LIMIT 1;`,
+      [mod_id]
     );
 
-    res.json({ message: "Module registration successful" });
+    if (groupQuery.rows.length === 0) {
+      console.error("❌ No available groups for this module.");
+      return res
+        .status(400)
+        .json({ error: "All groups are full. Please create a new group." });
+    }
+
+    const assignedGroup = groupQuery.rows[0].group_id;
+    console.log(`✅ Assigning user ${user_id} to group ${assignedGroup}`);
+
+    // ✅ Step 2: Register student in the module **AND** assign them a group
+    const registerQuery = await pool.query(
+      `INSERT INTO user_modules (user_id, mod_id, group_id) 
+       VALUES ($1, $2, $3) 
+       ON CONFLICT (user_id, mod_id) 
+       DO UPDATE SET group_id = EXCLUDED.group_id 
+       RETURNING group_id;`,
+      [user_id, mod_id, assignedGroup]
+    );
+
+    console.log("✅ Successfully registered:", registerQuery.rows[0]);
+
+    return res.json({
+      message: `Module registered successfully! Assigned to group: ${assignedGroup}`,
+      assignedGroup,
+    });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server error");
+    console.error("❌ Error registering module:", err.message);
+    res.status(500).json({ error: "Server error" });
   }
 });
-
 
 //profile route to display registered modules
 app.get("/profile", authorisation, async (req, res) => {
@@ -220,7 +248,6 @@ app.delete("/deregister-module/:mod_id", authorisation, async (req, res) => {
   }
 });
 
-
 // Route to create module timetable
 app.get("/events/:mod_id", async (req, res) => {
   try {
@@ -242,10 +269,6 @@ app.get("/events/:mod_id", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
-
-
-
-
 
 /**
  * Start Express server on port 5001

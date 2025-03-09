@@ -438,7 +438,7 @@ VALUES
 ('Software Dev I - Seminar (4CS12, 4CS13)', 'Seminar', 1, 1, 'Friday', '16:00:00', '18:00:00', 40, 69, 1, 40, NULL);
 
 SELECT * FROM event  --view events in day and time order for a specific module
-WHERE mod_id = 1 
+WHERE mod_id = 2 
 ORDER BY 
   CASE 
     WHEN day = 'Monday' THEN 1
@@ -463,5 +463,179 @@ FROM event e
 JOIN group_table g ON e.group_id = g.group_id
 WHERE g.group_name = '4CS08'
 ORDER BY e.day, e.start_time;
+
+INSERT INTO event (name, type, semester, week, day, start_time, end_time, size, roomID, mod_id, group_id, staff_id)
+VALUES
+-- Lectures
+('Mathematics for Computing - Lecture 2', 'Lecture', 1, 1, 'Tuesday', '11:00:00', '13:00:00', 300, 74, 2, NULL, NULL),
+('Mathematics for Computing - Lecture 1', 'Lecture', 1, 1, 'Tuesday', '15:00:00', '17:00:00', 300, 74, 2, NULL, NULL),
+
+-- Seminars
+('Mathematics for Computing - Seminar (4CS05)', 'Seminar', 1, 1, 'Tuesday', '14:00:00', '16:00:00', 20, 49, 2, 33, NULL),
+('Mathematics for Computing - Seminar (4CS01,4CS02)', 'Seminar', 1, 1, 'Tuesday', '14:00:00', '16:00:00', 40, 47, 2, 29, NULL),
+('Mathematics for Computing - Seminar (4CS03,4CS04)', 'Seminar', 1, 1, 'Tuesday', '14:00:00', '16:00:00', 40, 46, 2, 31, NULL),
+
+('Mathematics for Computing - Seminar (4CS17)', 'Seminar', 1, 1, 'Wednesday', '09:00:00', '11:00:00', 20, 34, 2, 45, NULL),
+('Mathematics for Computing - Seminar (4CS18)', 'Seminar', 1, 1, 'Wednesday', '09:00:00', '11:00:00', 20, 35, 2, 46, NULL),
+('Mathematics for Computing - Seminar (4CS16)', 'Seminar', 1, 1, 'Wednesday', '09:00:00', '11:00:00', 20, 23, 2, 44, NULL),
+
+('Mathematics for Computing - Seminar (4SE06,4SE07)', 'Seminar', 1, 1, 'Wednesday', '11:00:00', '13:00:00', 40, 32, 2, 52, NULL),
+
+('Mathematics for Computing - Seminar (4SE01,4SE02)', 'Seminar', 1, 1, 'Friday', '11:00:00', '13:00:00', 40, 40, 2, 48, NULL),
+('Mathematics for Computing - Seminar (4SE05)', 'Seminar', 1, 1, 'Friday', '11:00:00', '13:00:00', 20, 36, 2, 51, NULL),
+('Mathematics for Computing - Seminar (4SE03,4SE04)', 'Seminar', 1, 1, 'Friday', '11:00:00', '13:00:00', 40, 47, 2, 49, NULL),
+
+('Mathematics for Computing - Seminar (4CS11)', 'Seminar', 1, 1, 'Friday', '14:00:00', '16:00:00', 20, 34, 2, 39, NULL),
+('Mathematics for Computing - Seminar (4CS12)', 'Seminar', 1, 1, 'Friday', '14:00:00', '16:00:00', 20, 35, 2, 40, NULL),
+('Mathematics for Computing - Seminar (4CS13)', 'Seminar', 1, 1, 'Friday', '14:00:00', '16:00:00', 20, 24, 2, 41, NULL),
+('Mathematics for Computing - Seminar (4CS14)', 'Seminar', 1, 1, 'Friday', '14:00:00', '16:00:00', 20, 25, 2, 42, NULL),
+('Mathematics for Computing - Seminar (4CS15)', 'Seminar', 1, 1, 'Friday', '14:00:00', '16:00:00', 20, 27, 2, 43, NULL),
+
+('Mathematics for Computing - Seminar (4CS09)', 'Seminar', 1, 1, 'Friday', '16:00:00', '18:00:00', 20, 25, 2, 37, NULL),
+('Mathematics for Computing - Seminar (4CS10)', 'Seminar', 1, 1, 'Friday', '16:00:00', '18:00:00', 20, 36, 2, 38, NULL),
+('Mathematics for Computing - Seminar (4CS06)', 'Seminar', 1, 1, 'Friday', '16:00:00', '18:00:00', 20, 26, 2, 34, NULL),
+('Mathematics for Computing - Seminar (4CS07)', 'Seminar', 1, 1, 'Friday', '16:00:00', '18:00:00', 20, 27, 2, 35, NULL),
+('Mathematics for Computing - Seminar (4CS08)', 'Seminar', 1, 1, 'Friday', '16:00:00', '18:00:00', 20, 30, 2, 36, NULL);
+
+
+
+INSERT INTO event (name, type, semester, week, day, start_time, end_time, size, roomID, mod_id, group_id, staff_id)
+VALUES
+-- Lectures
+('Trends in Computer Science - Lecture 1', 'Lecture', 1, 1, 'Tuesday', '09:00:00', '11:00:00', 330, 74, 3, NULL, NULL),
+('Trends in Computer Science - Lecture 2', 'Lecture', 1, 1, 'Tuesday', '13:00:00', '15:00:00', 330, 74, 3, NULL, NULL),
+
+-- Seminars
+('Trends in Computer Science - Seminar (4CS01,4CS02)', 'Seminar', 1, 1, 'Tuesday', '11:00:00', '13:00:00', 40, 40, 3, 29, NULL),
+('Trends in Computer Science - Seminar (4CS06)', 'Seminar', 1, 1, 'Tuesday', '11:00:00', '13:00:00', 20, 26, 3, 34, NULL),
+('Trends in Computer Science - Seminar (4CS09,4CS10)', 'Seminar', 1, 1, 'Tuesday', '11:00:00', '13:00:00', 40, 47, 3, 37, NULL),
+('Trends in Computer Science - Seminar (4CS07)', 'Seminar', 1, 1, 'Tuesday', '11:00:00', '13:00:00', 20, 30, 3, 35, NULL),
+('Trends in Computer Science - Seminar (4CS08)', 'Seminar', 1, 1, 'Tuesday', '11:00:00', '13:00:00', 20, 33, 3, 36, NULL),
+
+('Trends in Computer Science - Seminar (4CS03,4CS04)', 'Seminar', 1, 1, 'Tuesday', '16:00:00', '18:00:00', 40, 69, 3, 31, NULL),
+('Trends in Computer Science - Seminar (4CS05)', 'Seminar', 1, 1, 'Tuesday', '16:00:00', '18:00:00', 20, 27, 3, 33, NULL),
+
+('Trends in Computer Science - Seminar (4CS16,4CS17)', 'Seminar', 1, 1, 'Wednesday', '09:00:00', '11:00:00', 40, 69, 3, 44, NULL),
+('Trends in Computer Science - Seminar (4CS18)', 'Seminar', 1, 1, 'Wednesday', '09:00:00', '11:00:00', 20, 26, 3, 46, NULL),
+
+('Trends in Computer Science - Seminar (4SE06,4SE07)', 'Seminar', 1, 1, 'Wednesday', '11:00:00', '13:00:00', 40, 40, 3, 52, NULL),
+
+('Trends in Computer Science - Seminar (4SE03)', 'Seminar', 1, 1, 'Friday', '11:00:00', '13:00:00', 20, 27, 3, 49, NULL),
+('Trends in Computer Science - Seminar (4SE04,4SE05)', 'Seminar', 1, 1, 'Friday', '11:00:00', '13:00:00', 40, 31, 3, 50, NULL),
+('Trends in Computer Science - Seminar (4SE01,4SE02)', 'Seminar', 1, 1, 'Friday', '11:00:00', '13:00:00', 40, 69, 3, 48, NULL),
+
+('Trends in Computer Science - Seminar (4CS11,4CS12)', 'Seminar', 1, 1, 'Friday', '14:00:00', '16:00:00', 40, 47, 3, 39, NULL),
+('Trends in Computer Science - Seminar (4CS15)', 'Seminar', 1, 1, 'Friday', '14:00:00', '16:00:00', 20, 30, 3, 43, NULL),
+('Trends in Computer Science - Seminar (4CS13,4CS14)', 'Seminar', 1, 1, 'Friday', '14:00:00', '16:00:00', 40, 32, 3, 41, NULL);
+
+INSERT INTO event (name, type, semester, week, day, start_time, end_time, size, roomID, mod_id, group_id, staff_id)
+VALUES
+-- Lecture
+('Computer System Fundamentals - Lecture', 'Lecture', 1, 1, 'Monday', '11:00:00', '13:00:00', 560, 9999, 4, NULL, NULL),
+
+-- Seminars
+('Computer System Fundamentals - Seminar (4SE06)', 'Seminar', 1, 1, 'Tuesday', '09:00:00', '11:00:00', 20, 25, 4, 52, NULL),
+('Computer System Fundamentals - Seminar (4SE07)', 'Seminar', 1, 1, 'Tuesday', '09:00:00', '11:00:00', 20, 27, 4, 53, NULL),
+
+('Computer System Fundamentals - Seminar (4CS13,4CS14)', 'Seminar', 1, 1, 'Tuesday', '11:00:00', '13:00:00', 40, 37, 4, 41, NULL),
+('Computer System Fundamentals - Seminar (4CS11,4CS12)', 'Seminar', 1, 1, 'Tuesday', '11:00:00', '13:00:00', 40, 32, 4, 39, NULL),
+('Computer System Fundamentals - Seminar (4CS15)', 'Seminar', 1, 1, 'Tuesday', '11:00:00', '13:00:00', 20, 49, 4, 43, NULL),
+
+('Computer System Fundamentals - Seminar (4CS16,4CS17)', 'Seminar', 1, 1, 'Wednesday', '11:00:00', '13:00:00', 40, 46, 4, 44, NULL),
+('Computer System Fundamentals - Seminar (4CS18)', 'Seminar', 1, 1, 'Wednesday', '11:00:00', '13:00:00', 20, 33, 4, 46, NULL),
+
+('Computer System Fundamentals - Seminar (4SE01,4SE02)', 'Seminar', 1, 1, 'Friday', '09:00:00', '11:00:00', 40, 69, 4, 48, NULL),
+('Computer System Fundamentals - Seminar (4SE03)', 'Seminar', 1, 1, 'Friday', '09:00:00', '11:00:00', 20, 23, 4, 49, NULL),
+('Computer System Fundamentals - Seminar (4SE04)', 'Seminar', 1, 1, 'Friday', '09:00:00', '11:00:00', 20, 24, 4, 50, NULL),
+('Computer System Fundamentals - Seminar (4SE05)', 'Seminar', 1, 1, 'Friday', '09:00:00', '11:00:00', 20, 27, 4, 51, NULL),
+
+('Computer System Fundamentals - Seminar (4CS02,4CS03)', 'Seminar', 1, 1, 'Friday', '11:00:00', '13:00:00', 40, 31, 4, 30, NULL),
+('Computer System Fundamentals - Seminar (4CS04,4CS05)', 'Seminar', 1, 1, 'Friday', '11:00:00', '13:00:00', 40, 69, 4, 32, NULL),
+('Computer System Fundamentals - Seminar (4CS01)', 'Seminar', 1, 1, 'Friday', '11:00:00', '13:00:00', 20, 24, 4, 29, NULL),
+
+('Computer System Fundamentals - Seminar (4CS10,4CS09)', 'Seminar', 1, 1, 'Friday', '14:00:00', '16:00:00', 40, 32, 4, 38, NULL),
+('Computer System Fundamentals - Seminar (4CS08)', 'Seminar', 1, 1, 'Friday', '14:00:00', '16:00:00', 20, 26, 4, 36, NULL),
+('Computer System Fundamentals - Seminar (4CS06,4CS07)', 'Seminar', 1, 1, 'Friday', '14:00:00', '16:00:00', 40, 29, 4, 34, NULL);
+
+--change 4cosc003w to sem 2, accidentally did sem1. can use this command template again if needed
+UPDATE event
+SET semester = 2
+WHERE mod_id = 3;
+
+INSERT INTO event (name, type, semester, week, day, start_time, end_time, size, roomID, mod_id, group_id, staff_id)
+VALUES
+-- Lecture
+('Software Development II - Lecture', 'Lecture', 2, 1, 'Monday', '09:00:00', '11:00:00', 620, 9999, 5, NULL, NULL),
+
+-- Seminars
+('Software Development II - Seminar (4SE01,4SE02)', 'Seminar', 2, 1, 'Tuesday', '16:00:00', '18:00:00', 40, 32, 5, 47, NULL),
+('Software Development II - Seminar (4SE03)', 'Seminar', 2, 1, 'Tuesday', '16:00:00', '18:00:00', 20, 43, 5, 48, NULL),
+('Software Development II - Seminar (4SE05)', 'Seminar', 2, 1, 'Tuesday', '16:00:00', '18:00:00', 20, 30, 5, 51, NULL),
+('Software Development II - Seminar (4SE04)', 'Seminar', 2, 1, 'Tuesday', '16:00:00', '18:00:00', 20, 24, 5, 50, NULL),
+
+('Software Development II - Seminar (4SE06)', 'Seminar', 2, 1, 'Wednesday', '09:00:00', '11:00:00', 20, 23, 5, 52, NULL),
+('Software Development II - Seminar (4SE07)', 'Seminar', 2, 1, 'Wednesday', '09:00:00', '11:00:00', 20, 33, 5, 53, NULL),
+
+('Software Development II - Seminar (4CS02,4CS03)', 'Seminar', 2, 1, 'Friday', '09:00:00', '11:00:00', 40, 32, 5, 30, NULL),
+('Software Development II - Seminar (4CS05)', 'Seminar', 2, 1, 'Friday', '09:00:00', '11:00:00', 20, 24, 5, 33, NULL),
+('Software Development II - Seminar (4CS01)', 'Seminar', 2, 1, 'Friday', '09:00:00', '11:00:00', 20, 23, 5, 29, NULL),
+('Software Development II - Seminar (4CS04)', 'Seminar', 2, 1, 'Friday', '09:00:00', '11:00:00', 20, 26, 5, 32, NULL),
+
+('Software Development II - Seminar (4CS16)', 'Seminar', 2, 1, 'Friday', '11:00:00', '13:00:00', 20, 26, 5, 44, NULL),
+('Software Development II - Seminar (4CS17)', 'Seminar', 2, 1, 'Friday', '11:00:00', '13:00:00', 20, 24, 5, 45, NULL),
+('Software Development II - Seminar (4CS18)', 'Seminar', 2, 1, 'Friday', '11:00:00', '13:00:00', 20, 23, 5, 46, NULL),
+
+('Software Development II - Seminar (4CS08,4CS09)', 'Seminar', 2, 1, 'Friday', '14:00:00', '16:00:00', 40, 29, 5, 36, NULL),
+('Software Development II - Seminar (4CS10)', 'Seminar', 2, 1, 'Friday', '14:00:00', '16:00:00', 20, 23, 5, 38, NULL),
+('Software Development II - Seminar (4DSA01,4DSA02)', 'Seminar', 2, 1, 'Friday', '14:00:00', '16:00:00', 40, 46, 5, 54, NULL),
+('Software Development II - Seminar (4CS06,4CS07)', 'Seminar', 2, 1, 'Friday', '14:00:00', '16:00:00', 40, 32, 5, 34, NULL),
+
+('Software Development II - Seminar (4CS11,4CS12)', 'Seminar', 2, 1, 'Friday', '16:00:00', '18:00:00', 40, 29, 5, 39, NULL),
+('Software Development II - Seminar (4CS13,4CS14)', 'Seminar', 2, 1, 'Friday', '16:00:00', '18:00:00', 40, 32, 5, 41, NULL),
+('Software Development II - Seminar (4CS15)', 'Seminar', 2, 1, 'Friday', '16:00:00', '18:00:00', 20, 23, 5, 43, NULL);
+
+
+INSERT INTO event (name, type, semester, week, day, start_time, end_time, size, roomID, mod_id, group_id, staff_id)
+VALUES
+-- Lecture
+('Web Design and Development - Lecture', 'Lecture', 2, 1, 'Monday', '11:00:00', '13:00:00', 620, 9999, 6, NULL, NULL),
+
+-- Seminars
+('Web Design and Development - Seminar (4SE07,4SE06)', 'Seminar', 2, 1, 'Tuesday', '09:00:00', '11:00:00', 40, 47, 6, 53, NULL),
+('Web Design and Development - Seminar (4CS11)', 'Seminar', 2, 1, 'Tuesday', '11:00:00', '13:00:00', 20, 35, 6, 39, NULL),
+('Web Design and Development - Seminar (4CS12)', 'Seminar', 2, 1, 'Tuesday', '11:00:00', '13:00:00', 20, 34, 6, 40, NULL),
+('Web Design and Development - Seminar (4CS15)', 'Seminar', 2, 1, 'Tuesday', '11:00:00', '13:00:00', 20, 27, 6, 43, NULL),
+('Web Design and Development - Seminar (4CS13)', 'Seminar', 2, 1, 'Tuesday', '11:00:00', '13:00:00', 20, 36, 6, 41, NULL),
+('Web Design and Development - Seminar (4CS14)', 'Seminar', 2, 1, 'Tuesday', '11:00:00', '13:00:00', 20, 24, 6, 42, NULL),
+
+('Web Design and Development - Seminar (4CS16)', 'Seminar', 2, 1, 'Wednesday', '11:00:00', '13:00:00', 20, 35, 6, 44, NULL),
+('Web Design and Development - Seminar (4CS17,4CS18)', 'Seminar', 2, 1, 'Wednesday', '11:00:00', '13:00:00', 40, 32, 6, 45, NULL),
+
+('Web Design and Development - Seminar (4SE01)', 'Seminar', 2, 1, 'Friday', '09:00:00', '11:00:00', 20, 36, 6, 47, NULL),
+('Web Design and Development - Seminar (4SE02)', 'Seminar', 2, 1, 'Friday', '09:00:00', '11:00:00', 20, 35, 6, 48, NULL),
+('Web Design and Development - Seminar (4SE03)', 'Seminar', 2, 1, 'Friday', '09:00:00', '11:00:00', 20, 34, 6, 49, NULL),
+('Web Design and Development - Seminar (4SE04)', 'Seminar', 2, 1, 'Friday', '09:00:00', '11:00:00', 20, 33, 6, 50, NULL),
+('Web Design and Development - Seminar (4SE05)', 'Seminar', 2, 1, 'Friday', '09:00:00', '11:00:00', 20, 25, 6, 51, NULL),
+
+('Web Design and Development - Seminar (4CS01)', 'Seminar', 2, 1, 'Friday', '11:00:00', '13:00:00', 20, 34, 6, 29, NULL),
+('Web Design and Development - Seminar (4CS02)', 'Seminar', 2, 1, 'Friday', '11:00:00', '13:00:00', 20, 35, 6, 30, NULL),
+('Web Design and Development - Seminar (4CS03,4CS04)', 'Seminar', 2, 1, 'Friday', '11:00:00', '13:00:00', 40, 29, 6, 31, NULL),
+('Web Design and Development - Seminar (4CS05)', 'Seminar', 2, 1, 'Friday', '11:00:00', '13:00:00', 20, 36, 6, 33, NULL),
+
+('Web Design and Development - Seminar (4CS08)', 'Seminar', 2, 1, 'Friday', '16:00:00', '18:00:00', 20, 34, 6, 36, NULL),
+('Web Design and Development - Seminar (4CS06,4CS07)', 'Seminar', 2, 1, 'Friday', '16:00:00', '18:00:00', 40, 31, 6, 34, NULL),
+('Web Design and Development - Seminar (4CS10)', 'Seminar', 2, 1, 'Friday', '16:00:00', '18:00:00', 20, 36, 6, 38, NULL),
+('Web Design and Development - Seminar (4CS09)', 'Seminar', 2, 1, 'Friday', '16:00:00', '18:00:00', 20, 35, 6, 37, NULL);
+
+
+--need group id column for user_modules table so we can assign a student to a group
+ALTER TABLE user_modules ADD COLUMN group_id INT REFERENCES group_table(group_id) ON DELETE SET NULL;
+
+--check to see if student has been assigned a group
+SELECT um.user_id, um.mod_id, um.group_id, g.group_name
+FROM user_modules um
+LEFT JOIN group_table g ON um.group_id = g.group_id
+WHERE um.user_id = 6;
+
 
 
