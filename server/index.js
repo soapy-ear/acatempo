@@ -270,6 +270,123 @@ app.get("/events/:mod_id", async (req, res) => {
   }
 });
 
+// Student Timetable GET request (Correctly Filters for Student's Registered Groups)
+app.get("/student-timetable", authorisation, async (req, res) => {
+  try {
+    const user_id = req.user; // Extract user ID from JWT
+    console.log("Fetching timetable for user:", user_id);
+
+    const eventsQuery = await pool.query(
+      `SELECT e.eventID, e.name, e.type, e.day, e.start_time, e.end_time, 
+              r.room_name, g.group_name
+       FROM event e
+       JOIN room r ON e.roomID = r.roomID
+       JOIN user_modules um ON e.mod_id = um.mod_id
+       LEFT JOIN group_table g ON e.group_id = g.group_id
+       WHERE um.user_id = $1
+       AND (e.group_id IS NULL OR e.group_id IN 
+            (SELECT group_id FROM user_modules WHERE user_id = $1))
+       ORDER BY 
+          CASE 
+            WHEN e.day = 'Monday' THEN 1
+            WHEN e.day = 'Tuesday' THEN 2
+            WHEN e.day = 'Wednesday' THEN 3
+            WHEN e.day = 'Thursday' THEN 4
+            WHEN e.day = 'Friday' THEN 5
+          END, e.start_time`,
+      [user_id]
+    );
+
+    console.log("Returned Student's Events:", eventsQuery.rows); // ✅ Debugging log
+
+    res.json(eventsQuery.rows);
+  } catch (err) {
+    console.error("Error fetching student timetable:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// Get student modules
+app.get("/student-modules", authorisation, async (req, res) => {
+  try {
+    console.log("🔍 Extracted User from Token:", req.user);
+
+    const user_id = req.user;
+    if (!user_id) {
+      console.error("❌ Authorization error: No user ID found.");
+      return res.status(401).json({ error: "Unauthorized. No user ID provided." });
+    }
+
+    console.log("✅ Fetching modules for user:", user_id);
+
+    const result = await pool.query(
+      `SELECT m.mod_id AS module_id, m.mod_name AS module_name
+       FROM user_modules um 
+       JOIN module m ON um.mod_id = m.mod_id 
+       WHERE um.user_id = $1`,
+      [user_id]
+    );
+
+    if (result.rows.length === 0) {
+      console.warn("⚠️ No modules found for user:", user_id);
+      return res.status(404).json({ error: "No registered modules found." });
+    }
+
+    console.log("✅ Modules Retrieved:", result.rows);
+    res.json(result.rows);
+  } catch (err) {
+    console.error("❌ Server error:", err);
+    res.status(500).json({ error: "Server error", details: err.message });
+  }
+});
+
+
+
+
+
+// Get available seminar groups for a module
+app.get("/module-seminars/:mod_id", authorisation, async (req, res) => {
+  try {
+    const mod_id = req.params.mod_id;
+    const result = await pool.query(
+      `SELECT g.group_id, g.group_name, e.day, e.start_time, e.end_time, r.room_name,
+              (SELECT COUNT(*) FROM user_modules WHERE group_id = g.group_id) AS current_students
+       FROM group_table g
+       JOIN event e ON g.group_id = e.group_id
+       JOIN room r ON e.roomID = r.roomID
+       WHERE e.mod_id = $1`,
+      [mod_id]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// Swap seminar groups
+app.post("/swap-seminar", authorisation, async (req, res) => {
+  try {
+    const { module_id, new_group_id } = req.body;
+    const user_id = req.user;
+
+    // Remove student from current seminar
+    await pool.query(
+      `DELETE FROM user_modules WHERE user_id = $1 AND mod_id = $2`,
+      [user_id, module_id]
+    );
+
+    // Add student to new seminar
+    await pool.query(
+      `INSERT INTO user_modules (user_id, mod_id, group_id) VALUES ($1, $2, $3)`,
+      [user_id, module_id, new_group_id]
+    );
+
+    res.json({ success: true, message: "Seminar swapped successfully!" });
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 /**
  * Start Express server on port 5001
  */

@@ -72,6 +72,7 @@ const ModuleTimetable = ({ mod_id }) => {
         slotMinTime="08:00:00"
         slotMaxTime="20:00:00"
         allDaySlot={false}
+        firstDay={1}
         eventClick={(info) => alert(`Event: ${info.event.title}`)}
       />
     </div>

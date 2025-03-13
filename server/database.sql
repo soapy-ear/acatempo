@@ -639,3 +639,10 @@ WHERE um.user_id = 6;
 
 
 
+--debugging
+SELECT um.user_id, um.mod_id, um.group_id, g.group_name, e.eventID, e.name, e.day, e.start_time, e.end_time 
+FROM user_modules um
+JOIN group_table g ON um.group_id = g.group_id
+JOIN event e ON g.group_id = e.group_id
+WHERE um.user_id = 6
+ORDER BY e.day, e.start_time;

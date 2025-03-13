@@ -21,6 +21,7 @@ import ManageModules from "./components/ManageModules";
 import ListModules from "./components/ListModules";
 import MyProfile from "./components/MyProfile";
 import ModuleDetails from "./components/ModuleDetails";
+import ChangeSeminar from "./components/ChangeSeminar";
 
 function App() {
   // State to track user authentication status
@@ -177,7 +178,8 @@ function App() {
                 isAuthenticated ? <MyProfile /> : <Navigate to="/login" />
               }
             />
-            
+            <Route path="/change-seminar" element={<ChangeSeminar />} />
+
             {/* Default Route: Redirect to Login if not authenticated, else Dashboard */}
             <Route
               path="/"
