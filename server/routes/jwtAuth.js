@@ -14,10 +14,9 @@ const validInfo = require("../middleware/validInfo"); //Middleware for input val
  */
 
 
-
 router.post("/register", validInfo, async (req, res) => {
   try {
-    // 1. Extract name, email, and password from request body
+    // 1. Extract name, email, password, and user specialisation from request body
     const { name, email, password, user_specialisation } = req.body;
 
     // 2. Check if the user already exists in the database
@@ -26,47 +25,46 @@ router.post("/register", validInfo, async (req, res) => {
     ]);
 
     if (user.rows.length !== 0) {
-      return res.status(401).json({ error: "User already exists" }); //401 is unauthorised error
+      return res.status(401).json({ error: "User already exists" }); // 401 indicates an unauthorised error
     }
 
-    //3. Hash the user password using bcrypt https://www.npmjs.com/package/bcrypt
+    // 3. Hash the user's password using bcrypt
     const saltRound = 10;
     const salt = await bcrypt.genSalt(saltRound);
     const bcryptPassword = await bcrypt.hash(password, salt);
 
-    // 4. Insert the new user into the database
+    // 4. Insert the new user into the users table
     const newUser = await pool.query(
       "INSERT INTO users (user_name, user_email, user_password) VALUES ($1, $2, $3) RETURNING *",
       [name, email, bcryptPassword]
     );
 
-    //res.json(newUser.rows[0]); for testing
-
     const userId = newUser.rows[0].user_id;
-      // insert into student or staff table based on role
+
+    // 5. Insert the user into either the students or staff table based on specialisation
     if (user_specialisation === "student") {
       await pool.query(
-      "INSERT INTO students (user_id, student_number) VALUES ($1, $2)",
-      [userId, `S${userId}`]
-    );
-  } else if (user_specialisation === "staff"){
-    await pool.query(
-      "INSERT INTO staff (user_id, department) VALUES ($1, $2)",
-      [userId, "Computing"]
-    );
-  }
+        "INSERT INTO students (user_id, student_number) VALUES ($1, $2)",
+        [userId, `S${userId}`] // Student number is prefixed with 'S'
+      );
+    } else if (user_specialisation === "staff") {
+      await pool.query(
+        "INSERT INTO staff (user_id, department) VALUES ($1, $2)",
+        [userId, "Computing"] // Default department is set to "Computing"
+      );
+    }
 
-
-    // 5. Generate JWT token for the newly registered user
+    // 6. Generate a JWT token for the newly registered user
     const token = jwtGenerator(userId);
 
-    // 6. Send the JWT token in the response
+    // 7. Send the JWT token and user specialisation in the response
     return res.json({ token, user_specialisation });
   } catch (err) {
     console.error(err.message);
-    return res.status(500).send("Server error");
+    return res.status(500).send("Server error"); // 500 indicates an internal server error
   }
 });
+
 
 /**
  * route   POST /auth/login
@@ -98,7 +96,7 @@ router.post("/login", validInfo, async (req, res) => {
       return res.status(401).json("Password or email is incorrect");
     }
 
-    // Determine if the user is a student or staff
+    //4. Determine if the user is a student or staff
     const studentCheck = await pool.query(
       "SELECT * FROM students WHERE user_id = $1",
       [user_id]
@@ -114,11 +112,11 @@ router.post("/login", validInfo, async (req, res) => {
       user_specialisation= "staff";
     }
 
-    // 4. Generate JWT token for the authenticated user
+    // 5. Generate JWT token for the authenticated user
     const token = jwtGenerator(user_id);
     console.log("Generated Token:", token);
 
-    // 5. Send the JWT token in the response
+    // 6. Send the JWT token in the response
     return res.json({ token, user_specialisation });
   } catch (err) {
     console.error(err.message);

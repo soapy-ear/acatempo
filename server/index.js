@@ -58,19 +58,31 @@ app.get("/modules/:id", async (req, res) => {
 
 app.post("/modules", async (req, res) => {
   try {
-    const { mod_name, mod_cod, semester, description } = req.body;
+    const { mod_name, mod_cod, semester, description, status, level } =
+      req.body;
 
     // Check if all required fields are provided
-    if (!mod_name || !mod_cod || !semester || !description) {
-      return res
-        .status(400)
-        .json({ message: "All fields, including description, are required." });
+    if (
+      !mod_name ||
+      !mod_cod ||
+      !semester ||
+      !description ||
+      !status ||
+      !level
+    ) {
+      return res.status(400).json({
+        message: "All fields, including status and level, are required.",
+      });
     }
+
     // Insert new module into database
     const newModule = await pool.query(
-      "INSERT INTO module (mod_name, mod_cod, semester, description) VALUES ($1, $2, $3, $4) RETURNING *",
-      [mod_name, mod_cod, semester, description]
+      `INSERT INTO module (mod_name, mod_cod, semester, description, status, level)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING *`,
+      [mod_name, mod_cod, semester, description, status, level]
     );
+
     // Return the newly created module
     res.json(newModule.rows[0]);
   } catch (err) {
@@ -78,6 +90,7 @@ app.post("/modules", async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
+
 
 /**
  * route   PUT /modules/:id
@@ -129,7 +142,7 @@ app.post("/register-module", authorisation, async (req, res) => {
     const user_id = req.user; // Extract user ID from JWT
     console.log("🔹 Registering module:", { user_id, mod_id });
 
-    // ✅ Step 1: Get all groups for this module, ordered by name
+    // Step 1: Get all groups for this module, ordered by name
     const groupQuery = await pool.query(
       `SELECT g.group_id, g.group_name, 
               COUNT(um.user_id) AS student_count
@@ -144,16 +157,16 @@ app.post("/register-module", authorisation, async (req, res) => {
     );
 
     if (groupQuery.rows.length === 0) {
-      console.error("❌ No available groups for this module.");
+      console.error("No available groups for this module.");
       return res
         .status(400)
         .json({ error: "All groups are full. Please create a new group." });
     }
 
     const assignedGroup = groupQuery.rows[0].group_id;
-    console.log(`✅ Assigning user ${user_id} to group ${assignedGroup}`);
+    console.log(`Assigning user ${user_id} to group ${assignedGroup}`);
 
-    // ✅ Step 2: Register student in the module **AND** assign them a group
+    // Step 2: Register student in the module **AND** assign them a group
     const registerQuery = await pool.query(
       `INSERT INTO user_modules (user_id, mod_id, group_id) 
        VALUES ($1, $2, $3) 
@@ -163,14 +176,14 @@ app.post("/register-module", authorisation, async (req, res) => {
       [user_id, mod_id, assignedGroup]
     );
 
-    console.log("✅ Successfully registered:", registerQuery.rows[0]);
+    console.log("Successfully registered:", registerQuery.rows[0]);
 
     return res.json({
       message: `Module registered successfully! Assigned to group: ${assignedGroup}`,
       assignedGroup,
     });
   } catch (err) {
-    console.error("❌ Error registering module:", err.message);
+    console.error("Error registering module:", err.message);
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -248,20 +261,25 @@ app.delete("/deregister-module/:mod_id", authorisation, async (req, res) => {
   }
 });
 
-// Route to create module timetable
+/// Route to fetch all events for a given module ID, including semester & week
 app.get("/events/:mod_id", async (req, res) => {
   try {
     const { mod_id } = req.params;
 
     const events = await pool.query(
-      `SELECT eventID, name, type, day, start_time, end_time, roomID, mod_id 
-       FROM event 
-       WHERE mod_id = $1
-       ORDER BY 
-          ARRAY_POSITION(ARRAY['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], day), 
-          start_time`,
-      [mod_id]
-    );
+  `SELECT e.eventID, e.name, e.type, e.day, e.start_time, e.end_time, 
+          e.roomID, e.mod_id, e.week, m.semester
+   FROM event e
+   JOIN module m ON e.mod_id = m.mod_id
+   WHERE e.mod_id = $1
+   ORDER BY 
+      m.semester::int,
+      e.week,
+      ARRAY_POSITION(ARRAY['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], e.day),
+      e.start_time`,
+  [mod_id]
+);
+
 
     res.json(events.rows);
   } catch (err) {
@@ -363,29 +381,66 @@ app.get("/module-seminars/:mod_id", authorisation, async (req, res) => {
   }
 });
 
-// Swap seminar groups
 app.post("/swap-seminar", authorisation, async (req, res) => {
   try {
     const { module_id, new_group_id } = req.body;
     const user_id = req.user;
 
-    // Remove student from current seminar
+    console.log(
+      `🔄 Swapping seminar for User ${user_id} in Module ${module_id} to Group ${new_group_id}`
+    );
+
+    // Step 1: Find the current group the user is registered in for this module
+    const checkCurrentGroup = await pool.query(
+      `SELECT group_id FROM user_modules WHERE user_id = $1 AND mod_id = $2`,
+      [user_id, module_id]
+    );
+
+    if (checkCurrentGroup.rows.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "You are not registered for this module." });
+    }
+
+    const current_group_id = checkCurrentGroup.rows[0].group_id;
+
+    if (current_group_id === new_group_id) {
+      return res.status(400).json({ error: "You are already in this group." });
+    }
+
+    // Step 2: Check if the new group has space (max 20 students)
+    const checkCapacity = await pool.query(
+      `SELECT COUNT(*) AS student_count FROM user_modules WHERE group_id = $1`,
+      [new_group_id]
+    );
+
+    const studentCount = parseInt(checkCapacity.rows[0].student_count, 10);
+    if (studentCount >= 20) {
+      return res.status(400).json({ error: "This group is full." });
+    }
+
+    // Step 3: Remove student from current group in THIS module only
     await pool.query(
       `DELETE FROM user_modules WHERE user_id = $1 AND mod_id = $2`,
       [user_id, module_id]
     );
 
-    // Add student to new seminar
+    // Step 4: Add student to the new group for the SAME module
     await pool.query(
       `INSERT INTO user_modules (user_id, mod_id, group_id) VALUES ($1, $2, $3)`,
       [user_id, module_id, new_group_id]
     );
 
+    console.log(
+      `✅ Seminar swap successful! User ${user_id} moved from Group ${current_group_id} to ${new_group_id}`
+    );
     res.json({ success: true, message: "Seminar swapped successfully!" });
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    console.error("❌ Error swapping seminar:", err);
+    res.status(500).json({ error: "Server error", details: err.message });
   }
 });
+
 
 /**
  * Start Express server on port 5001

@@ -12,12 +12,13 @@ const ManageModules = () => {
   const [mod_cod, setModCode] = useState(""); //Module code
   const [semester, setSemester] = useState(""); //Semester
   const [description, setDescription] = useState(""); //Module description
+  const [status, setStatus] = useState(""); //New: core or optional
+  const [level, setLevel] = useState(""); //New: module level (e.g. 4)
 
   /**
    * Handles form submission for creating a new module
    * Sends a POST request to the backend with module details
    */
-
   const onSubmitForm = async (e) => {
     e.preventDefault(); // Prevent default form submission behaviour
     try {
@@ -28,15 +29,22 @@ const ManageModules = () => {
       }
 
       // Ensure all fields are filled before submitting
-      if (!mod_name || !mod_cod || !semester || !description) {
+      if (
+        !mod_name ||
+        !mod_cod ||
+        !semester ||
+        !description ||
+        !status ||
+        !level
+      ) {
         alert(
-          "Please fill in all fields, including the semester and description."
+          "Please fill in all fields, including semester, level, and core/optional status."
         );
         return;
       }
 
       // Create request body with module data
-      const body = { mod_name, mod_cod, semester, description };
+      const body = { mod_name, mod_cod, semester, description, status, level };
       console.log("Submitting data:", body); //Testing, may need deleting or commenting out later
 
       // Send a POST request to the backend to create a module
@@ -86,9 +94,36 @@ const ManageModules = () => {
           </option>
           <option value="1">Semester 1</option>
           <option value="2">Semester 2</option>
-          <option value="3">Semester 3</option>
-          <option value="4">Year</option>{" "}
-          {/* This option may need changing as database is set a INT for module not VARCHAR */}
+          {/* Removed options for Semester 3 and Year as they are not used in this build */}
+        </select>
+
+        {/* Status Selection (Core or Optional) */}
+        <select
+          className="form-control"
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+        >
+          <option value="" disabled>
+            Select Module Type
+          </option>
+          <option value="core">Core</option>
+          <option value="optional">Optional</option>
+        </select>
+
+        {/* Module Level Selection */}
+        <select
+          className="form-control"
+          value={level}
+          onChange={(e) => setLevel(e.target.value)}
+        >
+          <option value="" disabled>
+            Select Module Level
+          </option>
+          <option value="3">Level 3</option>
+          <option value="4">Level 4</option>
+          <option value="5">Level 5</option>
+          <option value="6">Level 6</option>
+          <option value="7">Level 7</option>
         </select>
 
         {/* Description Input */}

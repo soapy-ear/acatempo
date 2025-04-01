@@ -410,7 +410,475 @@ defaultdb=> SELECT group_id, group_name FROM group_table WHERE mod_id = 1;
        54 | 4DSA01
        55 | 4DSA02
 (27 rows)
-
+ group_id | group_name | mod_id | module_code 
+----------+------------+--------+-------------
+       29 | 4CS01      |      1 | 4COSC001W
+       30 | 4CS02      |      1 | 4COSC001W
+       31 | 4CS03      |      1 | 4COSC001W
+       32 | 4CS04      |      1 | 4COSC001W
+       33 | 4CS05      |      1 | 4COSC001W
+       34 | 4CS06      |      1 | 4COSC001W
+       35 | 4CS07      |      1 | 4COSC001W
+       36 | 4CS08      |      1 | 4COSC001W
+       37 | 4CS09      |      1 | 4COSC001W
+       38 | 4CS10      |      1 | 4COSC001W
+       39 | 4CS11      |      1 | 4COSC001W
+       40 | 4CS12      |      1 | 4COSC001W
+       41 | 4CS13      |      1 | 4COSC001W
+       42 | 4CS14      |      1 | 4COSC001W
+       43 | 4CS15      |      1 | 4COSC001W
+       44 | 4CS16      |      1 | 4COSC001W
+       45 | 4CS17      |      1 | 4COSC001W
+       46 | 4CS18      |      1 | 4COSC001W
+       47 | 4SE01      |      1 | 4COSC001W
+       48 | 4SE02      |      1 | 4COSC001W
+       49 | 4SE03      |      1 | 4COSC001W
+       50 | 4SE04      |      1 | 4COSC001W
+       51 | 4SE05      |      1 | 4COSC001W
+       52 | 4SE06      |      1 | 4COSC001W
+       53 | 4SE07      |      1 | 4COSC001W
+       54 | 4DSA01     |      1 | 4COSC001W
+       55 | 4DSA02     |      1 | 4COSC001W
+       56 | 4CS01      |      2 | 4COSC002W
+       57 | 4CS02      |      2 | 4COSC002W
+       58 | 4CS03      |      2 | 4COSC002W
+       59 | 4CS04      |      2 | 4COSC002W
+       60 | 4CS05      |      2 | 4COSC002W
+       61 | 4CS06      |      2 | 4COSC002W
+       62 | 4CS07      |      2 | 4COSC002W
+       63 | 4CS08      |      2 | 4COSC002W
+       64 | 4CS09      |      2 | 4COSC002W
+       65 | 4CS10      |      2 | 4COSC002W
+       66 | 4CS11      |      2 | 4COSC002W
+       67 | 4CS12      |      2 | 4COSC002W
+       68 | 4CS13      |      2 | 4COSC002W
+       69 | 4CS14      |      2 | 4COSC002W
+       70 | 4CS15      |      2 | 4COSC002W
+       71 | 4CS16      |      2 | 4COSC002W
+       72 | 4CS17      |      2 | 4COSC002W
+       73 | 4CS18      |      2 | 4COSC002W
+       74 | 4SE01      |      2 | 4COSC002W
+       75 | 4SE02      |      2 | 4COSC002W
+       76 | 4SE03      |      2 | 4COSC002W
+       77 | 4SE04      |      2 | 4COSC002W
+       78 | 4SE05      |      2 | 4COSC002W
+       79 | 4SE06      |      2 | 4COSC002W
+       80 | 4SE07      |      2 | 4COSC002W
+       81 | 4DSA01     |      2 | 4COSC002W
+       82 | 4DSA02     |      2 | 4COSC002W
+       83 | 4CS01      |      3 | 4COSC003W
+       84 | 4CS02      |      3 | 4COSC003W
+       85 | 4CS03      |      3 | 4COSC003W
+       86 | 4CS04      |      3 | 4COSC003W
+       87 | 4CS05      |      3 | 4COSC003W
+       88 | 4CS06      |      3 | 4COSC003W
+       89 | 4CS07      |      3 | 4COSC003W
+       90 | 4CS08      |      3 | 4COSC003W
+       91 | 4CS09      |      3 | 4COSC003W
+       92 | 4CS10      |      3 | 4COSC003W
+       93 | 4CS11      |      3 | 4COSC003W
+       94 | 4CS12      |      3 | 4COSC003W
+       95 | 4CS13      |      3 | 4COSC003W
+       96 | 4CS14      |      3 | 4COSC003W
+       97 | 4CS15      |      3 | 4COSC003W
+       98 | 4CS16      |      3 | 4COSC003W
+       99 | 4CS17      |      3 | 4COSC003W
+      100 | 4CS18      |      3 | 4COSC003W
+      101 | 4SE01      |      3 | 4COSC003W
+      102 | 4SE02      |      3 | 4COSC003W
+      103 | 4SE03      |      3 | 4COSC003W
+      104 | 4SE04      |      3 | 4COSC003W
+      105 | 4SE05      |      3 | 4COSC003W
+      106 | 4SE06      |      3 | 4COSC003W
+      107 | 4SE07      |      3 | 4COSC003W
+      108 | 4DSA01     |      3 | 4COSC003W
+      109 | 4DSA02     |      3 | 4COSC003W
+      110 | 4CS01      |      4 | 4COSC004W
+      111 | 4CS02      |      4 | 4COSC004W
+      112 | 4CS03      |      4 | 4COSC004W
+      113 | 4CS04      |      4 | 4COSC004W
+      114 | 4CS05      |      4 | 4COSC004W
+      115 | 4CS06      |      4 | 4COSC004W
+      116 | 4CS07      |      4 | 4COSC004W
+      117 | 4CS08      |      4 | 4COSC004W
+      118 | 4CS09      |      4 | 4COSC004W
+      119 | 4CS10      |      4 | 4COSC004W
+      120 | 4CS11      |      4 | 4COSC004W
+      121 | 4CS12      |      4 | 4COSC004W
+      122 | 4CS13      |      4 | 4COSC004W
+      123 | 4CS14      |      4 | 4COSC004W
+      124 | 4CS15      |      4 | 4COSC004W
+      125 | 4CS16      |      4 | 4COSC004W
+      126 | 4CS17      |      4 | 4COSC004W
+      127 | 4CS18      |      4 | 4COSC004W
+      128 | 4SE01      |      4 | 4COSC004W
+      129 | 4SE02      |      4 | 4COSC004W
+      130 | 4SE03      |      4 | 4COSC004W
+      131 | 4SE04      |      4 | 4COSC004W
+      132 | 4SE05      |      4 | 4COSC004W
+      133 | 4SE06      |      4 | 4COSC004W
+      134 | 4SE07      |      4 | 4COSC004W
+      135 | 4DSA01     |      4 | 4COSC004W
+      136 | 4DSA02     |      4 | 4COSC004W
+      137 | 4CS01      |      5 | 4COSC005W
+      138 | 4CS02      |      5 | 4COSC005W
+      139 | 4CS03      |      5 | 4COSC005W
+      140 | 4CS04      |      5 | 4COSC005W
+      141 | 4CS05      |      5 | 4COSC005W
+      142 | 4CS06      |      5 | 4COSC005W
+      143 | 4CS07      |      5 | 4COSC005W
+      144 | 4CS08      |      5 | 4COSC005W
+      145 | 4CS09      |      5 | 4COSC005W
+      146 | 4CS10      |      5 | 4COSC005W
+      147 | 4CS11      |      5 | 4COSC005W
+      148 | 4CS12      |      5 | 4COSC005W
+      149 | 4CS13      |      5 | 4COSC005W
+      150 | 4CS14      |      5 | 4COSC005W
+      151 | 4CS15      |      5 | 4COSC005W
+      152 | 4CS16      |      5 | 4COSC005W
+      153 | 4CS17      |      5 | 4COSC005W
+      154 | 4CS18      |      5 | 4COSC005W
+      155 | 4SE01      |      5 | 4COSC005W
+      156 | 4SE02      |      5 | 4COSC005W
+      157 | 4SE03      |      5 | 4COSC005W
+      158 | 4SE04      |      5 | 4COSC005W
+      159 | 4SE05      |      5 | 4COSC005W
+      160 | 4SE06      |      5 | 4COSC005W
+      161 | 4SE07      |      5 | 4COSC005W
+      162 | 4DSA01     |      5 | 4COSC005W
+      163 | 4DSA02     |      5 | 4COSC005W
+      164 | 4CS01      |      6 | 4COSC011W
+      165 | 4CS02      |      6 | 4COSC011W
+      166 | 4CS03      |      6 | 4COSC011W
+      167 | 4CS04      |      6 | 4COSC011W
+      168 | 4CS05      |      6 | 4COSC011W
+      169 | 4CS06      |      6 | 4COSC011W
+      170 | 4CS07      |      6 | 4COSC011W
+      171 | 4CS08      |      6 | 4COSC011W
+      172 | 4CS09      |      6 | 4COSC011W
+      173 | 4CS10      |      6 | 4COSC011W
+      174 | 4CS11      |      6 | 4COSC011W
+      175 | 4CS12      |      6 | 4COSC011W
+      176 | 4CS13      |      6 | 4COSC011W
+      177 | 4CS14      |      6 | 4COSC011W
+      178 | 4CS15      |      6 | 4COSC011W
+      179 | 4CS16      |      6 | 4COSC011W
+      180 | 4CS17      |      6 | 4COSC011W
+      181 | 4CS18      |      6 | 4COSC011W
+      182 | 4SE01      |      6 | 4COSC011W
+      183 | 4SE02      |      6 | 4COSC011W
+      184 | 4SE03      |      6 | 4COSC011W
+      185 | 4SE04      |      6 | 4COSC011W
+      186 | 4SE05      |      6 | 4COSC011W
+      187 | 4SE06      |      6 | 4COSC011W
+      188 | 4SE07      |      6 | 4COSC011W
+      189 | 4DSA01     |      6 | 4COSC011W
+      190 | 4DSA02     |      6 | 4COSC011W
+      191 | 5SE04      |      8 | 5COSC019W
+      192 | 5SE05      |      8 | 5COSC019W
+      193 | 5DSA1      |      8 | 5COSC019W
+      194 | 5CS01      |      9 | 5COSC020W
+      195 | 5CS02      |      9 | 5COSC020W
+      196 | 5CS03      |      9 | 5COSC020W
+      197 | 5CS04      |      9 | 5COSC020W
+      198 | 5CS05      |      9 | 5COSC020W
+      199 | 5CS06      |      9 | 5COSC020W
+      200 | 5CS07      |      9 | 5COSC020W
+      201 | 5CS08      |      9 | 5COSC020W
+      202 | 5CS09      |      9 | 5COSC020W
+      203 | 5CS10      |      9 | 5COSC020W
+      204 | 5CS11      |      9 | 5COSC020W
+      205 | 5CS12      |      9 | 5COSC020W
+      206 | 5CS13      |      9 | 5COSC020W
+      207 | 5CS14      |      9 | 5COSC020W
+      208 | 5CS15      |      9 | 5COSC020W
+      209 | 5CS16      |      9 | 5COSC020W
+      210 | 5CS17      |      9 | 5COSC020W
+      211 | 5SE01      |      9 | 5COSC020W
+      212 | 5SE02      |      9 | 5COSC020W
+      213 | 5SE03      |      9 | 5COSC020W
+      214 | 5SE04      |      9 | 5COSC020W
+      215 | 5SE05      |      9 | 5COSC020W
+      216 | 5DSA1      |      9 | 5COSC020W
+      217 | 5CS01      |     10 | 5COSC021W
+      218 | 5CS02      |     10 | 5COSC021W
+      219 | 5CS03      |     10 | 5COSC021W
+      220 | 5CS04      |     10 | 5COSC021W
+      221 | 5CS05      |     10 | 5COSC021W
+      222 | 5CS06      |     10 | 5COSC021W
+      223 | 5CS07      |     10 | 5COSC021W
+      224 | 5CS08      |     10 | 5COSC021W
+      225 | 5CS09      |     10 | 5COSC021W
+      226 | 5CS10      |     10 | 5COSC021W
+      227 | 5CS11      |     10 | 5COSC021W
+      228 | 5CS12      |     10 | 5COSC021W
+      229 | 5CS13      |     10 | 5COSC021W
+      230 | 5CS14      |     10 | 5COSC021W
+      231 | 5CS15      |     10 | 5COSC021W
+      232 | 5CS16      |     10 | 5COSC021W
+      233 | 5CS17      |     10 | 5COSC021W
+      234 | 5SE01      |     10 | 5COSC021W
+      235 | 5SE02      |     10 | 5COSC021W
+      236 | 5SE03      |     10 | 5COSC021W
+      237 | 5SE04      |     10 | 5COSC021W
+      238 | 5SE05      |     10 | 5COSC021W
+      239 | 5DSA1      |     10 | 5COSC021W
+      240 | 5CS01      |     11 | 5COSC022W
+      241 | 5CS02      |     11 | 5COSC022W
+      242 | 5CS03      |     11 | 5COSC022W
+      243 | 5CS04      |     11 | 5COSC022W
+      244 | 5CS05      |     11 | 5COSC022W
+      245 | 5CS06      |     11 | 5COSC022W
+      246 | 5CS07      |     11 | 5COSC022W
+      247 | 5CS08      |     11 | 5COSC022W
+      248 | 5CS09      |     11 | 5COSC022W
+      249 | 5CS10      |     11 | 5COSC022W
+      250 | 5CS11      |     11 | 5COSC022W
+      251 | 5CS12      |     11 | 5COSC022W
+      252 | 5CS13      |     11 | 5COSC022W
+      253 | 5CS14      |     11 | 5COSC022W
+      254 | 5CS15      |     11 | 5COSC022W
+      255 | 5CS16      |     11 | 5COSC022W
+      256 | 5CS17      |     11 | 5COSC022W
+      257 | 5SE01      |     11 | 5COSC022W
+      258 | 5SE02      |     11 | 5COSC022W
+      259 | 5SE03      |     11 | 5COSC022W
+      260 | 5SE04      |     11 | 5COSC022W
+      261 | 5SE05      |     11 | 5COSC022W
+      262 | 5DSA1      |     11 | 5COSC022W
+      263 | 5CS01      |     12 | 5COSC023W
+      264 | 5CS02      |     12 | 5COSC023W
+      265 | 5CS03      |     12 | 5COSC023W
+      266 | 5CS04      |     12 | 5COSC023W
+      267 | 5CS05      |     12 | 5COSC023W
+      268 | 5CS06      |     12 | 5COSC023W
+      269 | 5CS07      |     12 | 5COSC023W
+      270 | 5CS08      |     12 | 5COSC023W
+      271 | 5CS09      |     12 | 5COSC023W
+      272 | 5CS10      |     12 | 5COSC023W
+      273 | 5CS11      |     12 | 5COSC023W
+      274 | 5CS12      |     12 | 5COSC023W
+      275 | 5CS13      |     12 | 5COSC023W
+      276 | 5CS14      |     12 | 5COSC023W
+      277 | 5CS15      |     12 | 5COSC023W
+      278 | 5CS16      |     12 | 5COSC023W
+      279 | 5CS17      |     12 | 5COSC023W
+      280 | 5SE01      |     12 | 5COSC023W
+      281 | 5SE02      |     12 | 5COSC023W
+      282 | 5SE03      |     12 | 5COSC023W
+      283 | 5SE04      |     12 | 5COSC023W
+      284 | 5SE05      |     12 | 5COSC023W
+      285 | 5DSA1      |     12 | 5COSC023W
+      286 | 5CS01      |     13 | 5COSC024W
+      287 | 5CS02      |     13 | 5COSC024W
+      288 | 5CS03      |     13 | 5COSC024W
+      289 | 5CS04      |     13 | 5COSC024W
+      290 | 5CS05      |     13 | 5COSC024W
+      291 | 5CS06      |     13 | 5COSC024W
+      292 | 5CS07      |     13 | 5COSC024W
+      293 | 5CS08      |     13 | 5COSC024W
+      294 | 5CS09      |     13 | 5COSC024W
+      295 | 5CS10      |     13 | 5COSC024W
+      296 | 5CS11      |     13 | 5COSC024W
+      297 | 5CS12      |     13 | 5COSC024W
+      298 | 5CS13      |     13 | 5COSC024W
+      299 | 5CS14      |     13 | 5COSC024W
+      300 | 5CS15      |     13 | 5COSC024W
+      301 | 5CS16      |     13 | 5COSC024W
+      302 | 5CS17      |     13 | 5COSC024W
+      303 | 5SE01      |     13 | 5COSC024W
+      304 | 5SE02      |     13 | 5COSC024W
+      305 | 5SE03      |     13 | 5COSC024W
+      306 | 5SE04      |     13 | 5COSC024W
+      307 | 5SE05      |     13 | 5COSC024W
+      308 | 5DSA1      |     13 | 5COSC024W
+      309 | 5CS01      |     14 | 5COSC025W
+      310 | 5CS02      |     14 | 5COSC025W
+      311 | 5CS03      |     14 | 5COSC025W
+      312 | 5CS04      |     14 | 5COSC025W
+      313 | 5CS05      |     14 | 5COSC025W
+      314 | 5CS06      |     14 | 5COSC025W
+      315 | 5CS07      |     14 | 5COSC025W
+      316 | 5CS08      |     14 | 5COSC025W
+      317 | 5CS09      |     14 | 5COSC025W
+      318 | 5CS10      |     14 | 5COSC025W
+      319 | 5CS11      |     14 | 5COSC025W
+      320 | 5CS12      |     14 | 5COSC025W
+      321 | 5CS13      |     14 | 5COSC025W
+      322 | 5CS14      |     14 | 5COSC025W
+      323 | 5CS15      |     14 | 5COSC025W
+      324 | 5CS16      |     14 | 5COSC025W
+      325 | 5CS17      |     14 | 5COSC025W
+      326 | 5SE01      |     14 | 5COSC025W
+      327 | 5SE02      |     14 | 5COSC025W
+      328 | 5SE03      |     14 | 5COSC025W
+      329 | 5SE04      |     14 | 5COSC025W
+      330 | 5SE05      |     14 | 5COSC025W
+      331 | 5DSA1      |     14 | 5COSC025W
+      332 | 5CS01      |     15 | 5COSC026W
+      333 | 5CS02      |     15 | 5COSC026W
+      334 | 5CS03      |     15 | 5COSC026W
+      335 | 5CS04      |     15 | 5COSC026W
+      336 | 5CS05      |     15 | 5COSC026W
+      337 | 5CS06      |     15 | 5COSC026W
+      338 | 5CS07      |     15 | 5COSC026W
+      339 | 5CS08      |     15 | 5COSC026W
+      340 | 5CS09      |     15 | 5COSC026W
+      341 | 5CS10      |     15 | 5COSC026W
+      342 | 5CS11      |     15 | 5COSC026W
+      343 | 5CS12      |     15 | 5COSC026W
+      344 | 5CS13      |     15 | 5COSC026W
+      345 | 5CS14      |     15 | 5COSC026W
+      346 | 5CS15      |     15 | 5COSC026W
+      347 | 5CS16      |     15 | 5COSC026W
+      348 | 5CS17      |     15 | 5COSC026W
+      349 | 5SE01      |     15 | 5COSC026W
+      350 | 5SE02      |     15 | 5COSC026W
+      351 | 5SE03      |     15 | 5COSC026W
+      352 | 5SE04      |     15 | 5COSC026W
+      353 | 5SE05      |     15 | 5COSC026W
+      354 | 5DSA1      |     15 | 5COSC026W
+      355 | 6CS01      |     16 | 6COSC019W
+      356 | 6CS02      |     16 | 6COSC019W
+      357 | 6CS03      |     16 | 6COSC019W
+      358 | 6CS04      |     16 | 6COSC019W
+      359 | 6CS05      |     16 | 6COSC019W
+      360 | 6CS06      |     16 | 6COSC019W
+      361 | 6CS07      |     16 | 6COSC019W
+      362 | 6CS08      |     16 | 6COSC019W
+      363 | 6CS09      |     16 | 6COSC019W
+      364 | 6CS10      |     16 | 6COSC019W
+      365 | 6CS11      |     16 | 6COSC019W
+      366 | 6CS12      |     16 | 6COSC019W
+      367 | 6CS13      |     16 | 6COSC019W
+      368 | 6CS14      |     16 | 6COSC019W
+      369 | 6CS15      |     16 | 6COSC019W
+      370 | 6CS16      |     16 | 6COSC019W
+      371 | 6CS17      |     16 | 6COSC019W
+      372 | 6SE01      |     16 | 6COSC019W
+      373 | 6SE02      |     16 | 6COSC019W
+      374 | 6SE03      |     16 | 6COSC019W
+      375 | 6SE04      |     16 | 6COSC019W
+      376 | 6SE05      |     16 | 6COSC019W
+      377 | 6DSA1      |     16 | 6COSC019W
+      378 | 6CS01      |     17 | 6COSC020W
+      379 | 6CS02      |     17 | 6COSC020W
+      380 | 6CS03      |     17 | 6COSC020W
+      381 | 6CS04      |     17 | 6COSC020W
+      382 | 6CS05      |     17 | 6COSC020W
+      383 | 6CS06      |     17 | 6COSC020W
+      384 | 6CS07      |     17 | 6COSC020W
+      385 | 6CS08      |     17 | 6COSC020W
+      386 | 6CS09      |     17 | 6COSC020W
+      387 | 6CS10      |     17 | 6COSC020W
+      388 | 6CS11      |     17 | 6COSC020W
+      389 | 6CS12      |     17 | 6COSC020W
+      390 | 6CS13      |     17 | 6COSC020W
+      391 | 6CS14      |     17 | 6COSC020W
+      392 | 6CS15      |     17 | 6COSC020W
+      393 | 6CS16      |     17 | 6COSC020W
+      394 | 6CS17      |     17 | 6COSC020W
+      395 | 6SE01      |     17 | 6COSC020W
+      396 | 6SE02      |     17 | 6COSC020W
+      397 | 6SE03      |     17 | 6COSC020W
+      398 | 6SE04      |     17 | 6COSC020W
+      399 | 6SE05      |     17 | 6COSC020W
+      400 | 6DSA1      |     17 | 6COSC020W
+      401 | 6CS01      |     18 | 6COSC021W
+      402 | 6CS02      |     18 | 6COSC021W
+      403 | 6CS03      |     18 | 6COSC021W
+      404 | 6CS04      |     18 | 6COSC021W
+      405 | 6CS05      |     18 | 6COSC021W
+      406 | 6CS06      |     18 | 6COSC021W
+      407 | 6CS07      |     18 | 6COSC021W
+      408 | 6CS08      |     18 | 6COSC021W
+      409 | 6CS09      |     18 | 6COSC021W
+      410 | 6CS10      |     18 | 6COSC021W
+      411 | 6CS11      |     18 | 6COSC021W
+      412 | 6CS12      |     18 | 6COSC021W
+      413 | 6CS13      |     18 | 6COSC021W
+      414 | 6CS14      |     18 | 6COSC021W
+      415 | 6CS15      |     18 | 6COSC021W
+      416 | 6CS16      |     18 | 6COSC021W
+      417 | 6CS17      |     18 | 6COSC021W
+      418 | 6SE01      |     18 | 6COSC021W
+      419 | 6SE02      |     18 | 6COSC021W
+      420 | 6SE03      |     18 | 6COSC021W
+      421 | 6SE04      |     18 | 6COSC021W
+      422 | 6SE05      |     18 | 6COSC021W
+      423 | 6DSA1      |     18 | 6COSC021W
+      424 | 6CS01      |     19 | 6COSC022W
+      425 | 6CS02      |     19 | 6COSC022W
+      426 | 6CS03      |     19 | 6COSC022W
+      427 | 6CS04      |     19 | 6COSC022W
+      428 | 6CS05      |     19 | 6COSC022W
+      429 | 6CS06      |     19 | 6COSC022W
+      430 | 6CS07      |     19 | 6COSC022W
+      431 | 6CS08      |     19 | 6COSC022W
+      432 | 6CS09      |     19 | 6COSC022W
+      433 | 6CS10      |     19 | 6COSC022W
+      434 | 6CS11      |     19 | 6COSC022W
+      435 | 6CS12      |     19 | 6COSC022W
+      436 | 6CS13      |     19 | 6COSC022W
+      437 | 6CS14      |     19 | 6COSC022W
+      438 | 6CS15      |     19 | 6COSC022W
+      439 | 6CS16      |     19 | 6COSC022W
+      440 | 6CS17      |     19 | 6COSC022W
+      441 | 6SE01      |     19 | 6COSC022W
+      442 | 6SE02      |     19 | 6COSC022W
+      443 | 6SE03      |     19 | 6COSC022W
+      444 | 6SE04      |     19 | 6COSC022W
+      445 | 6SE05      |     19 | 6COSC022W
+      446 | 6DSA1      |     19 | 6COSC022W
+      447 | 6CS01      |     20 | 6DATA005W
+      448 | 6CS02      |     20 | 6DATA005W
+      449 | 6CS03      |     20 | 6DATA005W
+      450 | 6CS04      |     20 | 6DATA005W
+      451 | 6CS05      |     20 | 6DATA005W
+      452 | 6CS06      |     20 | 6DATA005W
+      453 | 6CS07      |     20 | 6DATA005W
+      454 | 6CS08      |     20 | 6DATA005W
+      455 | 6CS09      |     20 | 6DATA005W
+      456 | 6CS10      |     20 | 6DATA005W
+      457 | 6CS11      |     20 | 6DATA005W
+      458 | 6CS12      |     20 | 6DATA005W
+      459 | 6CS13      |     20 | 6DATA005W
+      460 | 6CS14      |     20 | 6DATA005W
+      461 | 6CS15      |     20 | 6DATA005W
+      462 | 6CS16      |     20 | 6DATA005W
+      463 | 6CS17      |     20 | 6DATA005W
+      464 | 6SE01      |     20 | 6DATA005W
+      465 | 6SE02      |     20 | 6DATA005W
+      466 | 6SE03      |     20 | 6DATA005W
+      467 | 6SE04      |     20 | 6DATA005W
+      468 | 6SE05      |     20 | 6DATA005W
+      469 | 6DSA1      |     20 | 6DATA005W
+      522 | 4DSA1      |      2 | 4COSC002W
+      545 | 4DSA1      |      3 | 4COSC003W
+      568 | 4DSA1      |      4 | 4COSC004W
+      591 | 4DSA1      |      5 | 4COSC005W
+      614 | 4DSA1      |      6 | 4COSC011W
+      615 | 5CS01      |      8 | 5COSC019W
+      616 | 5CS02      |      8 | 5COSC019W
+      617 | 5CS03      |      8 | 5COSC019W
+      618 | 5CS04      |      8 | 5COSC019W
+      619 | 5CS05      |      8 | 5COSC019W
+      620 | 5CS06      |      8 | 5COSC019W
+      621 | 5CS07      |      8 | 5COSC019W
+      622 | 5CS08      |      8 | 5COSC019W
+      623 | 5CS09      |      8 | 5COSC019W
+      624 | 5CS10      |      8 | 5COSC019W
+      625 | 5CS11      |      8 | 5COSC019W
+      626 | 5CS12      |      8 | 5COSC019W
+      627 | 5CS13      |      8 | 5COSC019W
+      628 | 5CS14      |      8 | 5COSC019W
+      629 | 5CS15      |      8 | 5COSC019W
+      630 | 5CS16      |      8 | 5COSC019W
+      631 | 5CS17      |      8 | 5COSC019W
+      632 | 5SE01      |      8 | 5COSC019W
+      633 | 5SE02      |      8 | 5COSC019W
+      634 | 5SE03      |      8 | 5COSC019W
+(466 rows)
 INSERT INTO event (name, type, semester, week, day, start_time, end_time, size, roomID, mod_id, group_id, staff_id)
 VALUES ('Software Development I - Lecture', 'Lecture', 1, 1, 'Monday', '09:00:00', '11:00:00', 540, 9999, 1, NULL, NULL);
 
@@ -646,3 +1114,53 @@ JOIN group_table g ON um.group_id = g.group_id
 JOIN event e ON g.group_id = e.group_id
 WHERE um.user_id = 6
 ORDER BY e.day, e.start_time;
+
+
+--steps on db to test seminar swaps
+--check students current group
+SELECT user_id, mod_id, group_id 
+FROM user_modules 
+WHERE user_id = 6;  -- Replace 6 with the actual student ID
+
+--show available seminar groups
+SELECT g.group_id, g.group_name, e.day, e.start_time, e.end_time, r.room_name,
+       (SELECT COUNT(*) FROM user_modules WHERE group_id = g.group_id) AS current_students
+FROM group_table g
+JOIN event e ON g.group_id = e.group_id
+JOIN room r ON e.roomID = r.roomID
+WHERE e.mod_id = 4;  -- Replace 4 with the actual module ID
+
+--perform swap on acatempo
+
+--verify swap has happened
+SELECT user_id, mod_id, group_id 
+FROM user_modules 
+WHERE user_id = 6;  -- Replace 6 with the actual student ID
+
+
+
+ALTER TABLE module
+ADD COLUMN status VARCHAR(10);  -- Could be 'core' or 'optional'
+
+-- Semester 1
+UPDATE module SET status = 'core' WHERE mod_cod = '4COSC001W';
+UPDATE module SET status = 'core' WHERE mod_cod = '4COSC002W';
+UPDATE module SET status = 'core' WHERE mod_cod = '4COSC004W';
+
+-- Semester 2
+UPDATE module SET status = 'core' WHERE mod_cod = '4COSC005W';
+UPDATE module SET status = 'core' WHERE mod_cod = '4COSC003W';
+UPDATE module SET status = 'core' WHERE mod_cod = '4COSC011W';
+
+ALTER TABLE module
+ADD COLUMN level INTEGER;
+
+UPDATE module
+SET level = 4;
+
+ALTER TABLE module
+ADD CONSTRAINT level_check CHECK (level IN (3, 4, 5, 6, 7));
+
+ALTER TABLE module
+ADD CONSTRAINT status_check CHECK (status IN ('core', 'optional'));
+
