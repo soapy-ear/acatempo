@@ -26,13 +26,14 @@ const ModReg = () => {
         const token = localStorage.getItem("token"); // Get the JWT token
 
         // Fetch modules from the backend API
-        const response = await fetch("http://localhost:5001/modules", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            token: token, // Include the token in the request for authentication
-          },
-        });
+     const response = await fetch("http://localhost:5001/modbylevel", {
+       method: "GET",
+       headers: {
+         "Content-Type": "application/json",
+         token: token,
+       },
+     });
+
 
         if (response.ok) {
           const data = await response.json();

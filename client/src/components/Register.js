@@ -6,15 +6,18 @@ import "../App.css";
 
 const Register = ({ setAuth }) => {
   //State to store user inputs (email, password and name)
-  const [inputs, setInputs] = useState({
-    email: "",
-    password: "",
-    name: "",
-    user_specialisation: "student",
-  });
+ const [inputs, setInputs] = useState({
+   email: "",
+   password: "",
+   name: "",
+   user_specialisation: "student",
+   level: "", 
+ });
+
 
   //Destructure values from inputs state
-  const { email, password, name, user_specialisation } = inputs;
+  const { email, password, name, user_specialisation, level } = inputs;
+
 
   //Handles changes in input fields, updates state dynamically based on input name attribute.
   const onChange = (e) => {
@@ -29,7 +32,8 @@ const Register = ({ setAuth }) => {
 
     try {
       // Create request body with input values
-      const body = { email, password, name, user_specialisation };
+      const body = { email, password, name, user_specialisation, level };
+
 
       const response = await fetch("http://localhost:5001/auth/register", {
         method: "POST",
@@ -93,6 +97,22 @@ const Register = ({ setAuth }) => {
           <option value="student">Student</option>
           <option value="staff">Staff</option>
         </select>
+        {/* Level Dropdown for Students Only */}
+        {user_specialisation === "student" && (
+          <select
+            name="level"
+            className="form-control my-3"
+            value={level}
+            onChange={(e) => onChange(e)}
+            required
+          >
+            <option value="">Select Level</option>
+            <option value="4">Level 4</option>
+            <option value="5">Level 5</option>
+            <option value="6">Level 6</option>
+          </select>
+        )}
+
         {/* Submit Button */}
         <button className="btn btn-success w-100">Submit</button>
       </form>

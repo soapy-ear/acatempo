@@ -16,8 +16,9 @@ const validInfo = require("../middleware/validInfo"); //Middleware for input val
 
 router.post("/register", validInfo, async (req, res) => {
   try {
-    // 1. Extract name, email, password, and user specialisation from request body
-    const { name, email, password, user_specialisation } = req.body;
+    // 1. Extract name, email, password, user specialisation and level from request body
+    const { name, email, password, user_specialisation, level } = req.body;
+
 
     // 2. Check if the user already exists in the database
     const user = await pool.query("SELECT * FROM users WHERE user_email = $1", [
@@ -44,9 +45,10 @@ router.post("/register", validInfo, async (req, res) => {
     // 5. Insert the user into either the students or staff table based on specialisation
     if (user_specialisation === "student") {
       await pool.query(
-        "INSERT INTO students (user_id, student_number) VALUES ($1, $2)",
-        [userId, `S${userId}`] // Student number is prefixed with 'S'
+        "INSERT INTO students (user_id, student_number, level) VALUES ($1, $2, $3)",
+        [userId, `S${userId}`, level]
       );
+
     } else if (user_specialisation === "staff") {
       await pool.query(
         "INSERT INTO staff (user_id, department) VALUES ($1, $2)",

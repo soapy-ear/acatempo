@@ -8,6 +8,7 @@ const Dashboard = ({ setAuth }) => {
   const [currentDate, setCurrentDate] = useState("");
   const [schedule, setSchedule] = useState([]);
 
+  // Fetch user name
   async function getName() {
     try {
       const token = localStorage.getItem("token");
@@ -22,6 +23,7 @@ const Dashboard = ({ setAuth }) => {
     }
   }
 
+  // Fetch and filter today's schedule
   async function fetchTodaysSchedule() {
     try {
       const token = localStorage.getItem("token");
@@ -31,27 +33,59 @@ const Dashboard = ({ setAuth }) => {
       });
 
       const data = await response.json();
-      const today = new Date();
-      const todayDayName = today.toLocaleDateString("en-GB", {
-        weekday: "long",
-      });
+      const today = new Date().toDateString(); // e.g. "Mon Apr 15 2025"
 
       const todaysEvents = data
-        .filter((event) => event.day === todayDayName)
-        .map((event) => ({
-          time: `${event.start_time.substring(
-            0,
-            5
-          )} - ${event.end_time.substring(0, 5)}`,
-          course: `${event.name} (${event.type})`,
-          room: event.room_name,
-        }));
+        .map((event) => {
+          const eventDate = getEventDateTime(
+            event.semester,
+            event.week,
+            event.day,
+            event.start_time
+          );
+          const eventDay = new Date(eventDate).toDateString();
+
+          return {
+            match: eventDay === today,
+            time: `${event.start_time.substring(
+              0,
+              5
+            )} - ${event.end_time.substring(0, 5)}`,
+            course: `${event.name} (${event.type})`,
+            room: event.room_name,
+          };
+        })
+        .filter((event) => event.match);
 
       setSchedule(todaysEvents);
     } catch (err) {
       console.error("Error fetching today's schedule:", err.message);
     }
   }
+
+  // Converts semester/week/day/time to a real calendar datetime
+  const getEventDateTime = (semester, week, day, time) => {
+    const daysMap = {
+      Monday: 0,
+      Tuesday: 1,
+      Wednesday: 2,
+      Thursday: 3,
+      Friday: 4,
+      Saturday: 5,
+      Sunday: 6,
+    };
+
+    const semesterStart =
+      semester === 1 ? new Date("2024-09-23") : new Date("2025-01-20");
+
+    const baseDate = new Date(semesterStart);
+    baseDate.setDate(baseDate.getDate() + (week - 1) * 7 + daysMap[day]);
+
+    const [hours, minutes, seconds = "00"] = time.split(":");
+    baseDate.setHours(parseInt(hours), parseInt(minutes), parseInt(seconds));
+
+    return baseDate.toISOString();
+  };
 
   const logout = (e) => {
     e.preventDefault();

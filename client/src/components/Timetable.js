@@ -8,10 +8,10 @@ import "../App.css";
 
 const Timetable = () => {
   const navigate = useNavigate();
-  const [events, setEvents] = useState([]); // ✅ Ensure correct state handling
+  const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    let isMounted = true; // ✅ Prevents state update after unmounting
+    let isMounted = true;
 
     const fetchTimetable = async () => {
       try {
@@ -28,7 +28,7 @@ const Timetable = () => {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              token: token, // ✅ Authenticate request
+              token: token,
             },
           }
         );
@@ -38,25 +38,34 @@ const Timetable = () => {
         }
 
         const data = await response.json();
-        console.log("Fetched Student Timetable Events:", data); // ✅ Debugging log
+        console.log("Fetched Student Timetable Events:", data);
 
         if (isMounted && Array.isArray(data)) {
           const formattedEvents = data
-            .filter((event) => event.group_name === null || event.group_name) // ✅ Include lectures + registered seminars
+            .filter((event) => event.group_name === null || event.group_name)
             .map((event) => ({
-              id: event.eventid, // ✅ Ensure correct field name
+              id: event.eventid,
               title: `${event.name} (${event.type})`,
-              start: getDateTime(event.day, event.start_time),
-              end: getDateTime(event.day, event.end_time),
+              start: getEventDateTime(
+                event.semester,
+                event.week,
+                event.day,
+                event.start_time
+              ),
+              end: getEventDateTime(
+                event.semester,
+                event.week,
+                event.day,
+                event.end_time
+              ),
               extendedProps: {
                 room: event.room_name,
                 group: event.group_name || "Lecture",
               },
             }));
 
-          console.log("Formatted Events for FullCalendar:", formattedEvents); // ✅ Debugging log
-
-          setEvents(formattedEvents); // ✅ Store all events correctly
+          console.log("Formatted Events for FullCalendar:", formattedEvents);
+          setEvents(formattedEvents);
         }
       } catch (err) {
         console.error("Error fetching timetable:", err.message);
@@ -66,45 +75,46 @@ const Timetable = () => {
     fetchTimetable();
 
     return () => {
-      isMounted = false; // ✅ Cleanup function
+      isMounted = false;
     };
   }, [navigate]);
 
-  // Function to map weekday names to actual dates for FullCalendar
-  const getDateTime = (day, time) => {
+  // Converts semester + week + day + time into a real datetime
+  const getEventDateTime = (semester, week, day, time) => {
     const daysMap = {
-      Monday: 1,
-      Tuesday: 2,
-      Wednesday: 3,
-      Thursday: 4,
-      Friday: 5,
+      Monday: 0,
+      Tuesday: 1,
+      Wednesday: 2,
+      Thursday: 3,
+      Friday: 4,
+      Saturday: 5,
+      Sunday: 6,
     };
 
-    const today = new Date();
-    const currentDay = today.getDay(); // Sunday = 0, Monday = 1, etc.
-    const eventDay = daysMap[day];
+    const semesterStart =
+      semester === 1 ? new Date("2024-09-23") : new Date("2025-01-20");
 
-    // Ensure event appears on the correct weekday in the current week
-    const eventDate = new Date(today);
-    eventDate.setDate(today.getDate() + ((eventDay - currentDay + 7) % 7));
+    const baseDate = new Date(semesterStart);
+    baseDate.setDate(baseDate.getDate() + (week - 1) * 7 + daysMap[day]);
 
-    return new Date(
-      `${eventDate.toISOString().split("T")[0]}T${time}`
-    ).toISOString();
+    const [hours, minutes, seconds = "00"] = time.split(":");
+    baseDate.setHours(parseInt(hours), parseInt(minutes), parseInt(seconds));
+
+    return baseDate.toISOString();
   };
 
   return (
     <div className="timetable-container">
       <h1>My Timetable</h1>
       <FullCalendar
-        key={JSON.stringify(events)} // ✅ Ensures re-render when events update
+        key={JSON.stringify(events)}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView="timeGridWeek"
         events={events}
         slotMinTime="08:00:00"
         slotMaxTime="20:00:00"
         allDaySlot={false}
-        firstDay={1} // ✅ Ensures the week starts on Monday
+        firstDay={1}
         eventClick={(info) =>
           alert(
             `Event: ${info.event.title}\nRoom: ${info.event.extendedProps.room}`

@@ -20,7 +20,7 @@ app.use("/dashboard", require("./routes/dashboard"));
 //THE FOLLOWING ROUTES NEED MOVING INTO NEW FILE crudModules.js
 /**
  * route   GET /modules
- * desc    Retrieve all modules (Used in module info page or module selection page)
+ * desc    Retrieve all modules for module info page
  * access  Public
  */
 
@@ -30,6 +30,36 @@ app.get("/modules", async (req, res) => {
     res.json(allModules.rows); // Send retrieved module data as JSON response
   } catch (err) {
     console.error(err.message);
+  }
+});
+
+//for module registration page
+app.get("/modbylevel", authorisation, async (req, res) => {
+  try {
+    const user_id = req.user;
+
+    // Get student level
+    const studentRes = await pool.query(
+      "SELECT level FROM students WHERE user_id = $1",
+      [user_id]
+    );
+
+    if (studentRes.rows.length === 0) {
+      return res.status(403).json({ error: "Student level not found." });
+    }
+
+    const level = studentRes.rows[0].level;
+
+    // Get modules at that level
+    const modulesRes = await pool.query(
+      "SELECT * FROM module WHERE level = $1",
+      [level]
+    );
+
+    res.json(modulesRes.rows);
+  } catch (err) {
+    console.error("Error fetching modules by level:", err.message);
+    res.status(500).json({ error: "Server error" });
   }
 });
 
@@ -295,25 +325,35 @@ app.get("/student-timetable", authorisation, async (req, res) => {
     console.log("Fetching timetable for user:", user_id);
 
     const eventsQuery = await pool.query(
-      `SELECT e.eventID, e.name, e.type, e.day, e.start_time, e.end_time, 
-              r.room_name, g.group_name
-       FROM event e
-       JOIN room r ON e.roomID = r.roomID
-       JOIN user_modules um ON e.mod_id = um.mod_id
-       LEFT JOIN group_table g ON e.group_id = g.group_id
-       WHERE um.user_id = $1
-       AND (e.group_id IS NULL OR e.group_id IN 
-            (SELECT group_id FROM user_modules WHERE user_id = $1))
-       ORDER BY 
-          CASE 
-            WHEN e.day = 'Monday' THEN 1
-            WHEN e.day = 'Tuesday' THEN 2
-            WHEN e.day = 'Wednesday' THEN 3
-            WHEN e.day = 'Thursday' THEN 4
-            WHEN e.day = 'Friday' THEN 5
-          END, e.start_time`,
+      `SELECT 
+  e.eventID, e.name, e.type, e.day, e.start_time, e.end_time, 
+  r.room_name, g.group_name, 
+  e.week, 
+  m.semester
+FROM event e
+JOIN module m ON e.mod_id = m.mod_id 
+JOIN room r ON e.roomID = r.roomID
+JOIN user_modules um ON e.mod_id = um.mod_id
+LEFT JOIN group_table g ON e.group_id = g.group_id
+WHERE um.user_id = $1
+  AND (e.group_id IS NULL OR e.group_id IN (
+    SELECT group_id FROM user_modules WHERE user_id = $1
+  ))
+ORDER BY 
+  m.semester::int,
+  e.week,
+  CASE 
+    WHEN e.day = 'Monday' THEN 1
+    WHEN e.day = 'Tuesday' THEN 2
+    WHEN e.day = 'Wednesday' THEN 3
+    WHEN e.day = 'Thursday' THEN 4
+    WHEN e.day = 'Friday' THEN 5
+  END,
+  e.start_time;
+`,
       [user_id]
     );
+
 
     console.log("Returned Student's Events:", eventsQuery.rows); // ✅ Debugging log
 
@@ -350,14 +390,13 @@ app.get("/student-modules", authorisation, async (req, res) => {
       return res.status(404).json({ error: "No registered modules found." });
     }
 
-    console.log("✅ Modules Retrieved:", result.rows);
+    console.log("Modules Retrieved:", result.rows);
     res.json(result.rows);
   } catch (err) {
-    console.error("❌ Server error:", err);
+    console.error("Server error:", err);
     res.status(500).json({ error: "Server error", details: err.message });
   }
 });
-
 
 
 
@@ -366,20 +405,70 @@ app.get("/student-modules", authorisation, async (req, res) => {
 app.get("/module-seminars/:mod_id", authorisation, async (req, res) => {
   try {
     const mod_id = req.params.mod_id;
-    const result = await pool.query(
-      `SELECT g.group_id, g.group_name, e.day, e.start_time, e.end_time, r.room_name,
-              (SELECT COUNT(*) FROM user_modules WHERE group_id = g.group_id) AS current_students
+    const user_id = req.user;
+
+    console.log("🔍 Fetching seminar groups for mod_id:", mod_id);
+    console.log("🔐 Current user ID:", user_id);
+
+    // ✅ Fetch all unique seminar group summaries for this module
+    const groupsResult = await pool.query(
+      `SELECT DISTINCT ON (g.group_id)
+              g.group_id,
+              g.group_name,
+              e.day,
+              e.start_time,
+              e.end_time,
+              r.room_name,
+              (
+                SELECT COUNT(*) 
+                FROM user_modules 
+                WHERE group_id = g.group_id
+              ) AS current_students
        FROM group_table g
-       JOIN event e ON g.group_id = e.group_id
-       JOIN room r ON e.roomID = r.roomID
-       WHERE e.mod_id = $1`,
+       LEFT JOIN event e ON g.group_id = e.group_id AND e.mod_id = g.mod_id
+       LEFT JOIN room r ON e.roomID = r.roomID
+       WHERE g.mod_id = $1
+       ORDER BY g.group_id, e.week ASC NULLS LAST`,
       [mod_id]
     );
-    res.json(result.rows);
+
+    console.log("✅ Groups found:", groupsResult.rowCount);
+
+    // ✅ Fetch current seminar group for this user + module
+    const currentGroupResult = await pool.query(
+      `SELECT g.group_id, g.group_name, e.day, e.start_time, e.end_time, r.room_name
+       FROM user_modules um
+       JOIN group_table g ON um.group_id = g.group_id
+       LEFT JOIN event e ON g.group_id = e.group_id AND e.mod_id = um.mod_id
+       LEFT JOIN room r ON e.roomID = r.roomID
+       WHERE um.user_id = $1 AND um.mod_id = $2
+       ORDER BY e.week ASC NULLS LAST
+       LIMIT 1`,
+      [user_id, mod_id]
+    );
+
+    const currentGroup = currentGroupResult.rows[0] || null;
+
+    if (!currentGroup) {
+      console.log("⚠️ No current group found for this module.");
+    } else {
+      console.log("🎯 Current group:", currentGroup);
+    }
+
+    res.json({
+      groups: groupsResult.rows,
+      currentGroup,
+    });
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    console.error("❌ Error fetching seminar groups:", err);
+    res.status(500).json({ error: "Server error", details: err.message });
   }
 });
+
+
+
+
+
 
 app.post("/swap-seminar", authorisation, async (req, res) => {
   try {
@@ -432,11 +521,11 @@ app.post("/swap-seminar", authorisation, async (req, res) => {
     );
 
     console.log(
-      `✅ Seminar swap successful! User ${user_id} moved from Group ${current_group_id} to ${new_group_id}`
+      `✅Seminar swap successful! User ${user_id} moved from Group ${current_group_id} to ${new_group_id}`
     );
     res.json({ success: true, message: "Seminar swapped successfully!" });
   } catch (err) {
-    console.error("❌ Error swapping seminar:", err);
+    console.error(" Error swapping seminar:", err);
     res.status(500).json({ error: "Server error", details: err.message });
   }
 });
