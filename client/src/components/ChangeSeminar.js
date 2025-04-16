@@ -10,6 +10,9 @@ const ChangeSeminar = () => {
   const [currentGroup, setCurrentGroup] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const [swapType, setSwapType] = useState("semester"); // "semester" or "week"
+  const [selectedWeek, setSelectedWeek] = useState(1);
+
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
   useEffect(() => {
@@ -71,19 +74,33 @@ const ChangeSeminar = () => {
   const swapSeminar = async (group_id) => {
     try {
       const token = localStorage.getItem("token");
+
+      const body = {
+        module_id: selectedModule,
+        new_group_id: group_id,
+        swap_type: swapType,
+        week: swapType === "week" ? selectedWeek : null,
+      };
+
       const response = await fetch("http://localhost:5001/swap-seminar", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           token,
         },
-        body: JSON.stringify({
-          module_id: selectedModule,
-          new_group_id: group_id,
-        }),
+        body: JSON.stringify(body),
       });
 
       const result = await response.json();
+
+      if (!response.ok) {
+        // Show custom clash message if response contains clash info
+        const message =
+          result?.error || "Unable to swap seminar due to a clash on your timetable.";
+        alert(message);
+        return;
+      }
+
       alert(result.message);
 
       if (result.success) {
@@ -94,8 +111,10 @@ const ChangeSeminar = () => {
       }
     } catch (err) {
       console.error("Error swapping seminar:", err.message);
+      alert("Something went wrong. Please try again later.");
     }
   };
+
 
   const groupedSeminars = daysOfWeek.reduce((acc, day) => {
     acc[day] = seminarGroups.filter(
@@ -162,9 +181,51 @@ const ChangeSeminar = () => {
         )}
       </div>
 
+      {/* Swap Options */}
+      {selectedModule && (
+        <div className="swap-options" style={{ marginTop: "2rem" }}>
+          <h2>Choose Swap Type</h2>
+          <label>
+            <input
+              type="radio"
+              value="semester"
+              checked={swapType === "semester"}
+              onChange={() => setSwapType("semester")}
+            />
+            Whole Semester
+          </label>
+          <label style={{ marginLeft: "1rem" }}>
+            <input
+              type="radio"
+              value="week"
+              checked={swapType === "week"}
+              onChange={() => setSwapType("week")}
+            />
+            Specific Week
+          </label>
+
+          {swapType === "week" && (
+            <div style={{ marginTop: "0.5rem" }}>
+              <label>Select Week:&nbsp;</label>
+              <select
+                value={selectedWeek}
+                onChange={(e) => setSelectedWeek(parseInt(e.target.value))}
+              >
+                {[...Array(12)].map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    Week {i + 1}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Seminar list */}
       {selectedModule && (
         <div>
-          <h2>Available Seminars</h2>
+          <h2 style={{ marginTop: "2rem" }}>Available Seminars</h2>
           {loading ? (
             <p>Loading seminar groups...</p>
           ) : (
@@ -212,7 +273,12 @@ const ChangeSeminar = () => {
         </div>
       )}
 
-      <button onClick={() => navigate("/dashboard")}>Back to Dashboard</button>
+      <button
+        onClick={() => navigate("/dashboard")}
+        style={{ marginTop: "2rem" }}
+      >
+        Back to Dashboard
+      </button>
     </div>
   );
 };

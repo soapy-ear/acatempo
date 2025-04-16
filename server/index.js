@@ -467,68 +467,158 @@ app.get("/module-seminars/:mod_id", authorisation, async (req, res) => {
 
 
 
-
-
-
 app.post("/swap-seminar", authorisation, async (req, res) => {
   try {
     const { module_id, new_group_id } = req.body;
     const user_id = req.user;
 
     console.log(
-      `🔄 Swapping seminar for User ${user_id} in Module ${module_id} to Group ${new_group_id}`
+      `🔄 Semester swap for user ${user_id} → group ${new_group_id} in module ${module_id}`
     );
 
-    // Step 1: Find the current group the user is registered in for this module
-    const checkCurrentGroup = await pool.query(
+    // Step 1: Get current group
+    const currentRes = await pool.query(
       `SELECT group_id FROM user_modules WHERE user_id = $1 AND mod_id = $2`,
       [user_id, module_id]
     );
 
-    if (checkCurrentGroup.rows.length === 0) {
+    if (currentRes.rows.length === 0) {
       return res
         .status(404)
-        .json({ error: "You are not registered for this module." });
+        .json({ error: "You're not registered for this module." });
     }
 
-    const current_group_id = checkCurrentGroup.rows[0].group_id;
+    const current_group_id = currentRes.rows[0].group_id;
 
     if (current_group_id === new_group_id) {
       return res.status(400).json({ error: "You are already in this group." });
     }
 
-    // Step 2: Check if the new group has space (max 20 students)
-    const checkCapacity = await pool.query(
-      `SELECT COUNT(*) AS student_count FROM user_modules WHERE group_id = $1`,
+    // Step 2: Check group capacity
+    const capCheck = await pool.query(
+      `SELECT COUNT(*) AS count FROM user_modules WHERE group_id = $1`,
       [new_group_id]
     );
-
-    const studentCount = parseInt(checkCapacity.rows[0].student_count, 10);
-    if (studentCount >= 20) {
+    if (parseInt(capCheck.rows[0].count) >= 20) {
       return res.status(400).json({ error: "This group is full." });
     }
 
-    // Step 3: Remove student from current group in THIS module only
-    await pool.query(
-      `DELETE FROM user_modules WHERE user_id = $1 AND mod_id = $2`,
-      [user_id, module_id]
+    // Step 3: Get semester of the module being swapped
+    const semesterRes = await pool.query(
+      `SELECT semester FROM module WHERE mod_id = $1`,
+      [module_id]
+    );
+    const moduleSemester = semesterRes.rows[0].semester;
+
+    // Step 4: Fetch new group events for that semester
+    const newGroupEvents = await pool.query(
+      `SELECT week, day, start_time, end_time 
+       FROM event 
+       WHERE group_id = $1 AND mod_id = $2 AND semester = $3`,
+      [new_group_id, module_id, moduleSemester]
     );
 
-    // Step 4: Add student to the new group for the SAME module
-    await pool.query(
-      `INSERT INTO user_modules (user_id, mod_id, group_id) VALUES ($1, $2, $3)`,
-      [user_id, module_id, new_group_id]
+    // Step 5: Fetch current user events (only same semester)
+    const studentEvents = await pool.query(
+      `SELECT e.week, e.day, e.start_time, e.end_time, m.mod_cod
+       FROM event e
+       JOIN user_modules um ON um.mod_id = e.mod_id
+       JOIN module m ON m.mod_id = e.mod_id
+       WHERE um.user_id = $1
+         AND e.mod_id != $2
+         AND m.semester = $3
+         AND (e.group_id IS NULL OR e.group_id = um.group_id)`,
+      [user_id, module_id, moduleSemester]
     );
 
-    console.log(
-      `✅Seminar swap successful! User ${user_id} moved from Group ${current_group_id} to ${new_group_id}`
+    // Step 6: Clash detection
+    for (const newEvent of newGroupEvents.rows) {
+      for (const studentEvent of studentEvents.rows) {
+        if (
+          newEvent.week === studentEvent.week &&
+          newEvent.day === studentEvent.day &&
+          newEvent.start_time < studentEvent.end_time &&
+          studentEvent.start_time < newEvent.end_time
+        ) {
+          return res.status(409).json({
+            error: `Clash with ${studentEvent.mod_cod} on ${studentEvent.day} (week ${newEvent.week}) at ${studentEvent.start_time}`,
+          });
+        }
+      }
+    }
+
+    // Step 7: Perform safe semester swap
+    await pool.query(
+      `UPDATE user_modules SET group_id = $1 WHERE user_id = $2 AND mod_id = $3`,
+      [new_group_id, user_id, module_id]
     );
-    res.json({ success: true, message: "Seminar swapped successfully!" });
+
+    console.log(`✅ Semester swap complete for user ${user_id}`);
+    return res.json({
+      success: true,
+      message: "Seminar swapped successfully!",
+    });
   } catch (err) {
-    console.error(" Error swapping seminar:", err);
+    console.error("❌ Semester swap error:", err);
     res.status(500).json({ error: "Server error", details: err.message });
   }
 });
+
+
+app.post("/swap-seminar-weekly", authorisation, async (req, res) => {
+  try {
+    const { event_id, group_id, week } = req.body;
+    const user_id = req.user;
+
+    if (!event_id || !group_id || !week) {
+      return res.status(400).json({ error: "Missing required fields." });
+    }
+
+    console.log(
+      `📅 Weekly swap for user ${user_id} → event ${event_id} in week ${week}`
+    );
+
+    // 1. Confirm the event exists
+    const eventCheck = await pool.query(
+      `SELECT mod_id FROM event WHERE eventid = $1 AND group_id = $2 AND week = $3`,
+      [event_id, group_id, week]
+    );
+    if (eventCheck.rows.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "Event not found for this group and week." });
+    }
+
+    const mod_id = eventCheck.rows[0].mod_id;
+
+    // 2. Check if user already has a swap for that module & week
+    const swapCheck = await pool.query(
+      `SELECT * FROM student_event_swap 
+       WHERE student_id = $1 AND mod_id = $2 AND week = $3`,
+      [user_id, mod_id, week]
+    );
+    if (swapCheck.rows.length > 0) {
+      return res.status(400).json({
+        error: "You’ve already swapped your seminar for this week.",
+      });
+    }
+
+    // 3. Insert new weekly swap
+    await pool.query(
+      `INSERT INTO student_event_swap (student_id, event_id, mod_id, group_id, week)
+       VALUES ($1, $2, $3, $4, $5)`,
+      [user_id, event_id, mod_id, group_id, week]
+    );
+
+    console.log(`✅ Weekly swap recorded for user ${user_id} for week ${week}`);
+    res.json({ success: true, message: `Seminar swapped for week ${week}.` });
+  } catch (err) {
+    console.error("❌ Weekly swap error:", err);
+    res.status(500).json({ error: "Server error", details: err.message });
+  }
+});
+
+
 
 
 /**

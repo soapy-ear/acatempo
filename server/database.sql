@@ -1164,3 +1164,71 @@ ADD CONSTRAINT level_check CHECK (level IN (3, 4, 5, 6, 7));
 ALTER TABLE module
 ADD CONSTRAINT status_check CHECK (status IN ('core', 'optional'));
 
+--for weekly swaps
+CREATE TABLE student_event_swap (
+    swap_id SERIAL PRIMARY KEY,
+    student_id INTEGER NOT NULL,
+    event_id INTEGER NOT NULL,
+    swap_type VARCHAR(10) CHECK (swap_type IN ('week', 'semester')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES students(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (event_id) REFERENCES event(eventid) ON DELETE CASCADE
+);
+
+
+
+SELECT e2.eventid, e2.day, e2.start_time, e2.end_time, m.mod_cod
+FROM event e1
+JOIN event e2 ON 
+  e1.day = e2.day
+  AND e1.week = e2.week
+  AND e1.start_time < e2.end_time
+  AND e2.start_time < e1.end_time
+JOIN user_modules um ON um.mod_id = e2.mod_id
+JOIN module m ON m.mod_id = e2.mod_id
+WHERE 
+  e1.group_id = $1 
+  AND um.user_id = $2
+  AND e2.mod_id != $3
+
+
+  SELECT * FROM student_event_swap
+WHERE student_id = 9
+  AND mod_id = 8 
+  AND week = 3;
+
+  SELECT *
+FROM event
+WHERE group_id = 615
+  AND mod_id = 8
+  AND week = 3;
+
+  INSERT INTO event (
+  name,
+  type,
+  semester,
+  week,
+  day,
+  start_time,
+  end_time,
+  size,
+  roomID,
+  mod_id,
+  group_id
+)
+VALUES (
+  'Object Oriented Programming - 5CS01 (Week 3)', -- name
+  'Seminar',                                      -- type
+  1,                                              -- semester
+  3,                                              -- week
+  'Monday',                                       -- day
+  '09:00:00',                                     -- start_time
+  '11:00:00',                                     -- end_time
+  20,                                             -- size
+  70,                                             -- roomID (same as other weeks, update if needed)
+  8,                                              -- mod_id for 5COSC019W
+  615                                             -- group_id for 5CS01
+);
+
+
+
