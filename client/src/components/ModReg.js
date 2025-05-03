@@ -26,14 +26,13 @@ const ModReg = () => {
         const token = localStorage.getItem("token"); // Get the JWT token
 
         // Fetch modules from the backend API
-     const response = await fetch("http://localhost:5001/modbylevel", {
-       method: "GET",
-       headers: {
-         "Content-Type": "application/json",
-         token: token,
-       },
-     });
-
+        const response = await fetch("http://localhost:5001/modbylevel", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+          },
+        });
 
         if (response.ok) {
           const data = await response.json();
@@ -71,7 +70,7 @@ const ModReg = () => {
     }
 
     const token = localStorage.getItem("token");
-//register sem1 module
+    //register sem1 module
     try {
       const response1 = await fetch("http://localhost:5001/register-module", {
         method: "POST",
@@ -81,7 +80,7 @@ const ModReg = () => {
         },
         body: JSON.stringify({ mod_id: selectedModules.semester1 }),
       });
-// register sem2 module
+      // register sem2 module
       const response2 = await fetch("http://localhost:5001/register-module", {
         method: "POST",
         headers: {
@@ -108,7 +107,6 @@ const ModReg = () => {
       alert("An error occurred while registering modules.");
     }
   };
-
 
   /**
    * Filters modules based on semester.
@@ -176,11 +174,18 @@ const ModReg = () => {
           </div>
         </div>
         {/* Buttons for submission and navigation */}
-        <div className="button-group">
-          <button onClick={handleSubmit} className="btn-register">
+        <div className="text-center mt-4">
+          <button
+            onClick={handleSubmit}
+            className="btn btn-success"
+            style={{ marginRight: "1rem" }}
+          >
             Register Modules
           </button>
-          <button onClick={() => navigate(-1)} className="btn-back">
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="btn btn-secondary"
+          >
             Back to Dashboard
           </button>
         </div>

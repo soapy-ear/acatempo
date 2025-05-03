@@ -1,30 +1,29 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import EditModule from "./EditModule"; // Import the EditModule component for inline editing
+import EditModule from "./EditModule";
 import "../App.css";
 
-//Had the help of https://www.youtube.com/watch?v=5vF0FGfa0RQ throughout
-
+// Component: Displays a list of modules with options to view details, edit, or delete
 const ListModules = () => {
-  // Hook for programmatic navigation
   const navigate = useNavigate();
-  // State to store the list of modules
+
+  // State to store the array of modules fetched from the backend
   const [modules, setModules] = useState([]);
 
-  // Function to delete a module
-  async function deleteModule(id) {
+  // Function to delete a module by its ID
+  const deleteModule = async (id) => {
     try {
-      const token = localStorage.getItem("token"); // Retrieve authentication token
+      const token = localStorage.getItem("token");
       const res = await fetch(`http://localhost:5001/modules/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          token: token, // Add the token in the header for authentication
+          token: token, // Authorisation token from local storage
         },
       });
 
       if (res.ok) {
-        // Remove the deleted module from state to update UI
+        // Remove the deleted module from the local state
         setModules(modules.filter((module) => module.mod_id !== id));
       } else {
         console.error("Failed to delete module");
@@ -32,98 +31,99 @@ const ListModules = () => {
     } catch (err) {
       console.error(err.message);
     }
-  }
+  };
 
-  /**
-   * Function to fetch all modules from the backend
-   */
-  async function getModules() {
+  // Function to fetch the full list of modules from the backend
+  const getModules = async () => {
     try {
-      const token = localStorage.getItem("token"); // Retrieve the token
+      const token = localStorage.getItem("token");
       const res = await fetch("http://localhost:5001/modules", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          token: token, // Add the token in the header
+          token: token,
         },
       });
 
       if (res.ok) {
         const moduleArray = await res.json();
-        // Update state with fetched modules
-        setModules(moduleArray);
-        console.log(moduleArray); // Debugging log, may need deleting later
+        setModules(moduleArray); // Update state with fetched module list
       } else {
         console.error("Failed to fetch modules");
       }
     } catch (err) {
       console.error(err.message);
     }
-  }
+  };
 
-  /**
-   * Fetch modules when the component mounts
-   */
+  // Fetch modules when the component mounts
   useEffect(() => {
     getModules();
   }, []);
 
-  //Navigate to the module details page when a module name is clicked
+  // Navigate to the module detail page, passing module data via state
   const viewModuleDetails = (module) => {
     navigate(`/module/${module.mod_id}`, { state: { module } });
   };
 
   return (
     <Fragment>
-      <h1>List of Modules</h1>
-      {/* Table to display modules */}
-      <table className="table mt-5">
-        <thead>
-          <tr>
-            <th>Module Code</th>
-            <th>Module Name</th>
-            <th>Edit Module</th>
-            <th>Delete Module</th>
-          </tr>
-        </thead>
-        <tbody>
-          {modules.map((module) => (
-            <tr key={module.mod_id}>
-              <td>{module.mod_cod}</td>
-              {/* Clickable module name to view details */}
-              <td>
-                <span
-                  className="module-link"
-                  onClick={() => viewModuleDetails(module)}
-                  style={{
-                    color: "blue",
-                    cursor: "pointer",
-                    textDecoration: "underline",
-                  }}
-                >
-                  {module.mod_name}
-                </span>
-              </td>
-              {/* Edit module using the EditModule component */}
-              <td>
-                <EditModule module={module} />
-              </td>
-              {/* Delete module button */}
-              <td>
-                <button
-                  className="btn btn-danger"
-                  onClick={() => deleteModule(module.mod_id)}
-                >
-                  Delete
-                </button>
-              </td>
+      {/* Page title */}
+      <div className="text-center my-4">
+        <h1 className="welcome-text">AcaTempo</h1>
+        <h2>List of Modules</h2>
+      </div>
+
+      {/* Responsive table containing module data */}
+      <div className="table-responsive">
+        <table className="table table-bordered align-middle text-center">
+          <thead className="table-light">
+            <tr>
+              <th>Module Code</th>
+              <th>Module Name</th>
+              <th>Edit</th>
+              <th>Delete</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      {/* Back button to navigate to the dashboard */}
-      <div className="button-group">
-        <button onClick={() => navigate(-1)} className="btn-back">
+          </thead>
+          <tbody>
+            {/* Render each module as a table row */}
+            {modules.map((module) => (
+              <tr key={module.mod_id}>
+                <td>{module.mod_cod}</td>
+                <td>
+                  {/* Module name as clickable button to view details */}
+                  <button
+                    className="btn btn-outline-primary"
+                    onClick={() => viewModuleDetails(module)}
+                  >
+                    {module.mod_name}
+                  </button>
+                </td>
+                <td>
+                  {/* Reusable EditModule component allows inline editing */}
+                  <EditModule module={module} />
+                </td>
+                <td>
+                  {/* Button to delete the module */}
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => deleteModule(module.mod_id)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Navigation button to return to the dashboard */}
+      <div className="text-center mt-4">
+        <button
+          onClick={() => navigate("/dashboard")}
+          className="btn btn-secondary"
+        >
           Back to Dashboard
         </button>
       </div>

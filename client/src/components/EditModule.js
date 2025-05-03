@@ -1,6 +1,8 @@
 import React, { Fragment, useState } from "react";
 import "../App.css";
 
+//Had the help of https://www.youtube.com/watch?v=5vF0FGfa0RQ throughout
+
 const EditModule = ({ module }) => {
   // State for module name and code, initialised with existing module values
   const [mod_name, setModName] = useState(module.mod_name);

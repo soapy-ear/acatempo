@@ -2,91 +2,97 @@ import React, { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import "../App.css";
 
-//Created with the help of https://www.youtube.com/watch?v=cjqfF5hyZFg
-
+// Had the help of https://www.youtube.com/watch?v=cjqfF5hyZFg throughout
+// Allows new users to create an account and choose whether they are a student or staff member
 const Register = ({ setAuth }) => {
-  //State to store user inputs (email, password and name)
- const [inputs, setInputs] = useState({
-   email: "",
-   password: "",
-   name: "",
-   user_specialisation: "student",
-   level: "", 
- });
+  // State to store form input values
+  const [inputs, setInputs] = useState({
+    email: "",
+    password: "",
+    name: "",
+    user_specialisation: "student", // Default role is student
+    level: "", // Level only applies to students
+  });
 
-
-  //Destructure values from inputs state
+  // Destructure values from state for easy reference
   const { email, password, name, user_specialisation, level } = inputs;
 
-
-  //Handles changes in input fields, updates state dynamically based on input name attribute.
+  // Handle input field changes and update state
   const onChange = (e) => {
     setInputs({ ...inputs, [e.target.name]: e.target.value });
   };
 
-  //Handles form submission for user registration. Sends a POST request to the backend with user credentials.
-  //If successful, stores the JWT token and updates authentication state.
+  // Submit the registration form to the backend
   const onSubmitForm = async (e) => {
-    // Prevent default form submission behaviour
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submission behaviour
 
     try {
-      // Create request body with input values
+      // Build request payload
       const body = { email, password, name, user_specialisation, level };
 
-
+      // Send POST request to registration endpoint
       const response = await fetch("http://localhost:5001/auth/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" }, // Ensure JSON format
-        body: JSON.stringify(body), // Convert body object to JSON format
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body), // Convert data to JSON
       });
 
-      // Parse the JSON response
       const parseRes = await response.json();
 
+      // If registration is successful, store token and update auth state
       if (response.ok && parseRes.token) {
         localStorage.setItem("token", parseRes.token);
-        setAuth(true); // Only set auth after successful registration
+        setAuth(true); // Set logged-in state
       } else {
+        // Show error message returned by the server or a default message
         alert(parseRes.error || "Registration failed. Please try again.");
       }
     } catch (err) {
-      console.error(err.message);
+      console.error(err.message); // Handle unexpected errors
     }
   };
+
   return (
     <Fragment>
-      <h1 className="text-center my-5">Register</h1>
-      {/* Registration Form */}
+      {/* AcaTempo branding and registration heading */}
+      <div className="text-center my-4">
+        <h1 className="welcome-text">AcaTempo</h1>
+        <h2>Register</h2>
+      </div>
+
+      {/* Registration form */}
       <form onSubmit={onSubmitForm}>
-        {/* Email Input Field */}
+        {/* Email input */}
         <input
           type="email"
           name="email"
           placeholder="email"
           className="form-control my-3"
           value={email}
-          onChange={(e) => onChange(e)}
+          onChange={onChange}
         />
-        {/* Password Input Field */}
+
+        {/* Password input */}
         <input
           type="password"
           name="password"
           placeholder="password"
           className="form-control my-3"
           value={password}
-          onChange={(e) => onChange(e)}
+          onChange={onChange}
         />
-        {/* Name Input Field */}
+
+        {/* Name input */}
         <input
           type="text"
           name="name"
           placeholder="name"
           className="form-control my-3"
           value={name}
-          onChange={(e) => onChange(e)}
+          onChange={onChange}
         />
-        {/* Role Selection (Dropdown) */}
+
+        {/* Dropdown to select user role (student or staff) */}
         <select
           name="user_specialisation"
           className="form-control my-3"
@@ -97,13 +103,14 @@ const Register = ({ setAuth }) => {
           <option value="student">Student</option>
           <option value="staff">Staff</option>
         </select>
-        {/* Level Dropdown for Students Only */}
+
+        {/* Show level selection only if the user is a student */}
         {user_specialisation === "student" && (
           <select
             name="level"
             className="form-control my-3"
             value={level}
-            onChange={(e) => onChange(e)}
+            onChange={onChange}
             required
           >
             <option value="">Select Level</option>
@@ -113,11 +120,14 @@ const Register = ({ setAuth }) => {
           </select>
         )}
 
-        {/* Submit Button */}
+        {/* Submit button */}
         <button className="btn btn-success w-100">Submit</button>
       </form>
-      {/* Link to Login Page */}
-      <Link to="/login">Already have an account? Log in here</Link>
+
+      {/* Link to login page for users who already have an account */}
+      <div className="text-center mt-3">
+        <Link to="/login">Already have an account? Log in here</Link>
+      </div>
     </Fragment>
   );
 };

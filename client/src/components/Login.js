@@ -2,100 +2,104 @@ import React, { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import "../App.css";
 
-//Had the help of https://www.youtube.com/watch?v=cjqfF5hyZFg throughout
+// Had the help of https://www.youtube.com/watch?v=cjqfF5hyZFg throughout
 
+// Component: Login form for authenticating users
 const Login = ({ setAuth }) => {
-  //State to store the user's input (email and password)
+  // Local state to store form inputs
   const [inputs, setInputs] = useState({
     email: "",
     password: "",
   });
 
-  //State to store error message if login fails
+  // State for displaying error messages
   const [errorMessage, setErrorMessage] = useState("");
 
-  //Destructure email and password from the inputs state
+  // Destructure values from input state for convenience
   const { email, password } = inputs;
 
-  /**
-   * Handle changes in input fields
-   * Updates state as the user types in the email and password fields
-   */
-
+  // Handle changes to input fields
   const onChange = (e) => {
     setInputs({ ...inputs, [e.target.name]: e.target.value });
   };
 
-  /**
-   * Handles the form submission for user login
-   * Sends a POST request to the backend with email and password
-   * If successful, stores the JWT token in localStorage and sets authentication state
-   */
+  // Handle form submission
   const onSubmitForm = async (e) => {
-    e.preventDefault(); // Prevent default form submission behaviour
-    try {
-      const body = { email, password }; // Create request body with user credentials
+    e.preventDefault(); // Prevent page refresh
 
-      // Send a POST request to the authentication API endpoint
+    try {
+      const body = { email, password };
+
+      // Send POST request to login endpoint
       const response = await fetch("http://localhost:5001/auth/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" }, // Ensure JSON format
-        body: JSON.stringify(body), // Convert the body object to JSON
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body), // Send login credentials as JSON
       });
 
-      // Parse the JSON response
       const parseRes = await response.json();
 
+      // If login successful, store token and specialisation in localStorage
       if (response.ok && parseRes.token) {
-        // Store token & user specialisation in localStorage
         localStorage.setItem("token", parseRes.token);
         localStorage.setItem(
           "user_specialisation",
           parseRes.user_specialisation
         );
-
-        //Set authentication to true
-        setAuth(true);
+        setAuth(true); // Update auth state to reflect logged-in status
       } else {
-        //Handle login failure
+        // Display appropriate error message
         setErrorMessage(parseRes.error || "Invalid email or password.");
       }
     } catch (err) {
-      console.error(err.message); // Log any errors to the console
+      console.error(err.message);
       setErrorMessage("Server error. Please try again.");
     }
   };
 
   return (
     <Fragment>
-      <h1 className="text-center my-5">Login</h1>
-      {/* Display error message if login fails */}
-      {errorMessage && <p className="alert alert-danger">{errorMessage}</p>}
-      {/* Login Form */}
+      {/* Page heading */}
+      <div className="text-center my-4">
+        <h1 className="welcome-text">AcaTempo</h1>
+        <h2>Login</h2>
+      </div>
+
+      {/* Conditionally show error message if login fails */}
+      {errorMessage && (
+        <p className="alert alert-danger text-center">{errorMessage}</p>
+      )}
+
+      {/* Login form */}
       <form onSubmit={onSubmitForm}>
-        {/* Email Input */}
+        {/* Email input field */}
         <input
           type="email"
           name="email"
           placeholder="email"
           className="form-control my-3"
           value={email}
-          onChange={(e) => onChange(e)}
-        ></input>
-        {/* Password Input */}
+          onChange={onChange}
+        />
+
+        {/* Password input field */}
         <input
           type="password"
           name="password"
           placeholder="password"
           className="form-control my-3"
           value={password}
-          onChange={(e) => onChange(e)}
-        ></input>
-        {/* Submit Button */}
+          onChange={onChange}
+        />
+
+        {/* Submit button */}
         <button className="btn btn-success w-100">Submit</button>
       </form>
-      {/* Link to Register Page */}
-      <Link to="/register">No account? Register here</Link>
+
+      {/* Link to registration page for users without an account */}
+      <div className="text-center mt-3">
+        <Link to="/register">No account? Register here</Link>
+      </div>
     </Fragment>
   );
 };

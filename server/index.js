@@ -3,10 +3,15 @@ const app = express(); //initialise express application
 const cors = require("cors"); //Import CORS middleware for handling cross-origin requests
 const pool = require("./db"); //Import database connection
 const authorisation = require("./middleware/authorisation");
+
 //Had the help of https://www.youtube.com/watch?v=5vF0FGfa0RQ throughout for CRUD operations
+// https://hightouch.com/sql-dictionary/sql-common-table-expression-cte CTE 
+//www.w3schools.com/postgresql/index.php for postgresql syntax
+//chatgpt.com to help with debugging
+
 
 //middleware
-app.use(cors()); // Enables backend to accept requests from frontend (Cross-Origin Resource Sharing)
+https: app.use(cors()); // Enables backend to accept requests from frontend (Cross-Origin Resource Sharing)
 app.use(express.json()); // Allows Express to parse incoming JSON data (for req.body)
 
 //ROUTES
@@ -190,7 +195,7 @@ app.post("/register-module", authorisation, async (req, res) => {
       console.error("No available groups for this module.");
       return res
         .status(400)
-        .json({ error: "All groups are full. Please create a new group." });
+        .json({ error: "All groups are full. Please select a different module." });
     }
 
     const assignedGroup = groupQuery.rows[0].group_id;
@@ -317,65 +322,92 @@ app.get("/events/:mod_id", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
-
-// Student Timetable GET request (Correctly Filters for Student's Registered Groups)
+//get student timetable
+//https://hightouch.com/sql-dictionary/sql-common-table-expression-cte cte tutorial
 app.get("/student-timetable", authorisation, async (req, res) => {
   try {
-    const user_id = req.user; // Extract user ID from JWT
+    const user_id = req.user;
     console.log("Fetching timetable for user:", user_id);
 
-    const eventsQuery = await pool.query(
-      `SELECT 
-  e.eventID, e.name, e.type, e.day, e.start_time, e.end_time, 
-  r.room_name, g.group_name, 
-  e.week, 
-  m.semester
-FROM event e
-JOIN module m ON e.mod_id = m.mod_id 
-JOIN room r ON e.roomID = r.roomID
-JOIN user_modules um ON e.mod_id = um.mod_id
-LEFT JOIN group_table g ON e.group_id = g.group_id
-WHERE um.user_id = $1
-  AND (e.group_id IS NULL OR e.group_id IN (
-    SELECT group_id FROM user_modules WHERE user_id = $1
-  ))
-ORDER BY 
-  m.semester::int,
-  e.week,
-  CASE 
-    WHEN e.day = 'Monday' THEN 1
-    WHEN e.day = 'Tuesday' THEN 2
-    WHEN e.day = 'Wednesday' THEN 3
-    WHEN e.day = 'Thursday' THEN 4
-    WHEN e.day = 'Friday' THEN 5
-  END,
-  e.start_time;
-`,
-      [user_id]
-    );
+    const query = `
+      WITH student_modules AS (
+        SELECT mod_id, group_id
+        FROM user_modules
+        WHERE user_id = $1
+      ),
+      weekly_swaps AS (
+        SELECT week, mod_id, event_id
+        FROM student_event_swap
+        WHERE student_id = $1
+      ),
+      base_events AS (
+        SELECT 
+          e.eventid, e.name, e.type, e.day, e.start_time, e.end_time,
+          r.room_name, g.group_name, e.week, m.semester, e.mod_id, e.group_id
+        FROM event e
+        JOIN room r ON e.roomID = r.roomID
+        LEFT JOIN group_table g ON e.group_id = g.group_id
+        JOIN module m ON e.mod_id = m.mod_id
+        JOIN student_modules sm ON e.mod_id = sm.mod_id
+        WHERE 
+          (e.group_id IS NULL OR e.group_id = sm.group_id)
+          AND NOT EXISTS (
+            SELECT 1 FROM weekly_swaps ws 
+            WHERE ws.week = e.week AND ws.mod_id = e.mod_id
+          )
+      ),
+      override_events AS (
+        SELECT 
+          e.eventid, e.name, e.type, e.day, e.start_time, e.end_time,
+          r.room_name, g.group_name, e.week, m.semester, e.mod_id, e.group_id
+        FROM weekly_swaps ws
+        JOIN event e ON ws.event_id = e.eventid
+        JOIN room r ON e.roomID = r.roomID
+        LEFT JOIN group_table g ON e.group_id = g.group_id
+        JOIN module m ON e.mod_id = m.mod_id
+      )
+      SELECT * FROM (
+        SELECT * FROM base_events
+        UNION ALL
+        SELECT * FROM override_events
+      ) AS all_events
+      ORDER BY 
+        semester::int,
+        week,
+        CASE 
+          WHEN day = 'Monday' THEN 1
+          WHEN day = 'Tuesday' THEN 2
+          WHEN day = 'Wednesday' THEN 3
+          WHEN day = 'Thursday' THEN 4
+          WHEN day = 'Friday' THEN 5
+        END,
+        start_time;
+    `;
 
-
-    console.log("Returned Student's Events:", eventsQuery.rows); // ✅ Debugging log
-
-    res.json(eventsQuery.rows);
+    const events = await pool.query(query, [user_id]);
+    console.log("Timetable events returned:", events.rows.length);
+    res.json(events.rows);
   } catch (err) {
     console.error("Error fetching student timetable:", err.message);
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Server error", details: err.message });
   }
 });
+
+
+
 
 // Get student modules
 app.get("/student-modules", authorisation, async (req, res) => {
   try {
-    console.log("🔍 Extracted User from Token:", req.user);
+    console.log(" Extracted User from Token:", req.user);
 
     const user_id = req.user;
     if (!user_id) {
-      console.error("❌ Authorization error: No user ID found.");
-      return res.status(401).json({ error: "Unauthorized. No user ID provided." });
+      console.error(" Authorization error: No user ID found.");
+      return res.status(401).json({ error: "Unauthorised. No user ID provided." });
     }
 
-    console.log("✅ Fetching modules for user:", user_id);
+    console.log("Fetching modules for user:", user_id);
 
     const result = await pool.query(
       `SELECT m.mod_id AS module_id, m.mod_name AS module_name
@@ -386,7 +418,7 @@ app.get("/student-modules", authorisation, async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      console.warn("⚠️ No modules found for user:", user_id);
+      console.warn(" No modules found for user:", user_id);
       return res.status(404).json({ error: "No registered modules found." });
     }
 
@@ -410,7 +442,7 @@ app.get("/module-seminars/:mod_id", authorisation, async (req, res) => {
     console.log("🔍 Fetching seminar groups for mod_id:", mod_id);
     console.log("🔐 Current user ID:", user_id);
 
-    // ✅ Fetch all unique seminar group summaries for this module
+    // Fetch all unique seminar group summaries for this module
     const groupsResult = await pool.query(
       `SELECT DISTINCT ON (g.group_id)
               g.group_id,
@@ -432,9 +464,9 @@ app.get("/module-seminars/:mod_id", authorisation, async (req, res) => {
       [mod_id]
     );
 
-    console.log("✅ Groups found:", groupsResult.rowCount);
+    console.log("Groups found:", groupsResult.rowCount);
 
-    // ✅ Fetch current seminar group for this user + module
+    // Fetch current seminar group for this user + module
     const currentGroupResult = await pool.query(
       `SELECT g.group_id, g.group_name, e.day, e.start_time, e.end_time, r.room_name
        FROM user_modules um
@@ -452,7 +484,7 @@ app.get("/module-seminars/:mod_id", authorisation, async (req, res) => {
     if (!currentGroup) {
       console.log("⚠️ No current group found for this module.");
     } else {
-      console.log("🎯 Current group:", currentGroup);
+      console.log("Current group:", currentGroup);
     }
 
     res.json({
@@ -460,20 +492,20 @@ app.get("/module-seminars/:mod_id", authorisation, async (req, res) => {
       currentGroup,
     });
   } catch (err) {
-    console.error("❌ Error fetching seminar groups:", err);
+    console.error("Error fetching seminar groups:", err);
     res.status(500).json({ error: "Server error", details: err.message });
   }
 });
 
 
-
+//swap seminar for whole semester
 app.post("/swap-seminar", authorisation, async (req, res) => {
   try {
     const { module_id, new_group_id } = req.body;
     const user_id = req.user;
 
     console.log(
-      `🔄 Semester swap for user ${user_id} → group ${new_group_id} in module ${module_id}`
+      `Semester swap for user ${user_id} → group ${new_group_id} in module ${module_id}`
     );
 
     // Step 1: Get current group
@@ -553,71 +585,117 @@ app.post("/swap-seminar", authorisation, async (req, res) => {
       [new_group_id, user_id, module_id]
     );
 
-    console.log(`✅ Semester swap complete for user ${user_id}`);
+    console.log(`Semester swap complete for user ${user_id}`);
     return res.json({
       success: true,
       message: "Seminar swapped successfully!",
     });
   } catch (err) {
-    console.error("❌ Semester swap error:", err);
+    console.error(" Semester swap error:", err);
     res.status(500).json({ error: "Server error", details: err.message });
   }
 });
 
-
+//weekly seminer swaps
 app.post("/swap-seminar-weekly", authorisation, async (req, res) => {
   try {
     const { event_id, group_id, week } = req.body;
     const user_id = req.user;
+    console.log("Weekly Swap Request Body:", { event_id, group_id, week });
 
     if (!event_id || !group_id || !week) {
-      return res.status(400).json({ error: "Missing required fields." });
+      return res
+        .status(400)
+        .json({ error: "Missing event ID or week number for weekly swap." });
     }
 
-    console.log(
-      `📅 Weekly swap for user ${user_id} → event ${event_id} in week ${week}`
-    );
-
-    // 1. Confirm the event exists
-    const eventCheck = await pool.query(
-      `SELECT mod_id FROM event WHERE eventid = $1 AND group_id = $2 AND week = $3`,
+    // Step 1: Confirm the event exists, matches week and group, and get mod_id
+    const eventRes = await pool.query(
+      `SELECT mod_id FROM event 
+       WHERE eventid = $1 AND group_id = $2 AND week = $3`,
       [event_id, group_id, week]
     );
-    if (eventCheck.rows.length === 0) {
+
+    if (eventRes.rows.length === 0) {
       return res
         .status(404)
         .json({ error: "Event not found for this group and week." });
     }
 
-    const mod_id = eventCheck.rows[0].mod_id;
+    const mod_id = eventRes.rows[0].mod_id;
 
-    // 2. Check if user already has a swap for that module & week
-    const swapCheck = await pool.query(
+    // Step 2: Ensure the student is actually registered for the module
+    const registrationCheck = await pool.query(
+      `SELECT * FROM user_modules 
+       WHERE user_id = $1 AND mod_id = $2`,
+      [user_id, mod_id]
+    );
+
+    if (registrationCheck.rows.length === 0) {
+      return res
+        .status(403)
+        .json({ error: "You're not registered for this module." });
+    }
+
+    // Step 3: Prevent duplicate swaps
+    const existingSwap = await pool.query(
       `SELECT * FROM student_event_swap 
        WHERE student_id = $1 AND mod_id = $2 AND week = $3`,
       [user_id, mod_id, week]
     );
-    if (swapCheck.rows.length > 0) {
-      return res.status(400).json({
-        error: "You’ve already swapped your seminar for this week.",
-      });
+
+    if (existingSwap.rows.length > 0) {
+      return res
+        .status(400)
+        .json({ error: "You’ve already swapped your seminar for this week." });
     }
 
-    // 3. Insert new weekly swap
+    // Step 4: Insert the weekly swap
     await pool.query(
       `INSERT INTO student_event_swap (student_id, event_id, mod_id, group_id, week)
        VALUES ($1, $2, $3, $4, $5)`,
       [user_id, event_id, mod_id, group_id, week]
     );
 
-    console.log(`✅ Weekly swap recorded for user ${user_id} for week ${week}`);
-    res.json({ success: true, message: `Seminar swapped for week ${week}.` });
+    console.log(`Weekly swap recorded for user ${user_id} for week ${week}`);
+    return res.json({
+      success: true,
+      message: `Seminar swapped for week ${week}.`,
+    });
   } catch (err) {
-    console.error("❌ Weekly swap error:", err);
-    res.status(500).json({ error: "Server error", details: err.message });
+    console.error(" Weekly swap error:", err);
+    return res
+      .status(500)
+      .json({ error: "Server error", details: err.message });
   }
 });
 
+// Get event_id based on module_id, group_id, and week
+app.get("/event-id", authorisation, async (req, res) => {
+  try {
+    const { mod_id, group_id, week } = req.query;
+
+    if (!mod_id || !group_id || !week) {
+      return res.status(400).json({ error: "Missing mod_id, group_id, or week in query." });
+    }
+
+    const result = await pool.query(
+      `SELECT eventid 
+       FROM event 
+       WHERE mod_id = $1 AND group_id = $2 AND week = $3`,
+      [mod_id, group_id, week]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "No event found for that group and week." });
+    }
+
+    return res.json({ event_id: result.rows[0].eventid });
+  } catch (err) {
+    console.error(" Error fetching event_id:", err.message);
+    res.status(500).json({ error: "Server error", details: err.message });
+  }
+});
 
 
 

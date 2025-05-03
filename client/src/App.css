@@ -437,5 +437,20 @@ label {
   gap: 1rem;
 }
 
+.welcome-text {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.btn-back {
+  margin-top: 1.5rem;
+}
+
+.table th,
+.table td {
+  vertical-align: middle;
+}
+
 
 

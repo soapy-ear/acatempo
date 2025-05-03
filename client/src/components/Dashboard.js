@@ -1,29 +1,37 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
 import "../App.css";
 
+// Dashboard component: displays welcome message, navigation buttons, and today's schedule
 const Dashboard = ({ setAuth }) => {
   const navigate = useNavigate();
+
+  // Stores logged-in user's name
   const [name, setName] = useState("");
+
+  // Stores formatted version of today’s date (e.g. Monday, 3 March 2025)
   const [currentDate, setCurrentDate] = useState("");
+
+  // Stores list of events scheduled for today
   const [schedule, setSchedule] = useState([]);
 
-  // Fetch user name
+  // Fetch user’s name from the backend
   async function getName() {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token"); // Get token from local storage
       const response = await fetch("http://localhost:5001/dashboard/", {
         method: "GET",
-        headers: { token },
+        headers: { token }, // Pass token for authentication
       });
       const parseRes = await response.json();
-      setName(parseRes.user_name);
+      setName(parseRes.user_name); // Set user's name from response
     } catch (err) {
       console.error(err.message);
     }
   }
 
-  // Fetch and filter today's schedule
+  // Fetch timetable data and filter events occurring today
   async function fetchTodaysSchedule() {
     try {
       const token = localStorage.getItem("token");
@@ -33,8 +41,9 @@ const Dashboard = ({ setAuth }) => {
       });
 
       const data = await response.json();
-      const today = new Date().toDateString(); // e.g. "Mon Apr 15 2025"
+      const today = new Date().toDateString(); // Today's date in readable format
 
+      // Map over events and filter those occurring today
       const todaysEvents = data
         .map((event) => {
           const eventDate = getEventDateTime(
@@ -46,7 +55,7 @@ const Dashboard = ({ setAuth }) => {
           const eventDay = new Date(eventDate).toDateString();
 
           return {
-            match: eventDay === today,
+            match: eventDay === today, // Boolean: does this event occur today?
             time: `${event.start_time.substring(
               0,
               5
@@ -55,15 +64,15 @@ const Dashboard = ({ setAuth }) => {
             room: event.room_name,
           };
         })
-        .filter((event) => event.match);
+        .filter((event) => event.match); // Keep only today's events
 
-      setSchedule(todaysEvents);
+      setSchedule(todaysEvents); // Store today's events in state
     } catch (err) {
       console.error("Error fetching today's schedule:", err.message);
     }
   }
 
-  // Converts semester/week/day/time to a real calendar datetime
+  // Convert semester, week, day, and time into a calendar date and time (ISO format)
   const getEventDateTime = (semester, week, day, time) => {
     const daysMap = {
       Monday: 0,
@@ -75,6 +84,7 @@ const Dashboard = ({ setAuth }) => {
       Sunday: 6,
     };
 
+    // Define semester start dates (must match academic calendar)
     const semesterStart =
       semester === 1 ? new Date("2024-09-23") : new Date("2025-01-20");
 
@@ -84,20 +94,23 @@ const Dashboard = ({ setAuth }) => {
     const [hours, minutes, seconds = "00"] = time.split(":");
     baseDate.setHours(parseInt(hours), parseInt(minutes), parseInt(seconds));
 
-    return baseDate.toISOString();
+    return baseDate.toISOString(); // Return date in ISO string format
   };
 
+  // Logout function: clears token and updates auth state
   const logout = (e) => {
     e.preventDefault();
     localStorage.removeItem("token");
-    setAuth(false);
+    setAuth(false); // Update auth state in parent component
   };
 
+  // On component mount, fetch user name and today’s schedule, and set current date
   useEffect(() => {
     getName();
     fetchTodaysSchedule();
 
     const today = new Date();
+    // Format date in UK format (e.g. Monday, 3 March 2025)
     const formattedDate = today.toLocaleDateString("en-GB", {
       weekday: "long",
       day: "numeric",
@@ -105,15 +118,19 @@ const Dashboard = ({ setAuth }) => {
       year: "numeric",
     });
 
-    setCurrentDate(formattedDate);
+    setCurrentDate(formattedDate); // Store formatted date
   }, []);
 
   return (
     <Fragment>
+      {/* Top navigation bar with user’s name */}
+      <Navbar user_name={name} />
+
       <div className="dashboard-container">
         <h1 className="welcome-text">Welcome {name ? name : "Guest"}</h1>
 
         <div className="dashboard-content">
+          {/* Navigation buttons to key areas of the app */}
           <div className="button-group">
             <button
               className="btn btn-secondary"
@@ -156,9 +173,12 @@ const Dashboard = ({ setAuth }) => {
             </button>
           </div>
 
+          {/* Schedule section showing today's classes */}
           <div className="schedule-box">
             <h2>Today's Schedule</h2>
             <p className="current-date">{currentDate}</p>
+
+            {/* If events exist, list them. Otherwise, display fallback message */}
             {schedule.length > 0 ? (
               <ul>
                 {schedule.map((item, index) => (
